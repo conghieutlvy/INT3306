@@ -14,7 +14,7 @@ class SinhvienController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('sv');
+        $this->middleware('auth:sinhvien');
     }
 
     /**

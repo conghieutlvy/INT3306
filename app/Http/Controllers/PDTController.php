@@ -13,7 +13,7 @@ class PDTController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('pdt');
+        $this->middleware('auth');
     }
 
     /**
