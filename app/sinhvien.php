@@ -9,7 +9,7 @@ class sinhvien extends Authenticatable
 {
     use Notifiable;
 	public $table = "sinhviens";
-	protected $guard = 'sinhvien';
+	//protected $guard = 'sinhvien';
 	
     /**
      * The attributes that are mass assignable.

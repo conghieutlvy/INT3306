@@ -14,11 +14,14 @@
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('home', 'PDTController@index')->name('pdt.dashboard');
-Route::get('home_sv', 'SinhvienController@index')->name('sv.dashboard');
+Route::group(['prefix' => 'pdt', 'middleware'=> 'pdt'], function () {
+	Route::get('home', 'PDTController@index')->name('pdt.home');
+});
 
-
-
+Route::group(['prefix' => 'sinhvien', 'middleware' => 'sv'], function () {
+	Route::get('home_sv', 'SinhvienController@index')->name('sv.home');
+	
+});
 
 
 

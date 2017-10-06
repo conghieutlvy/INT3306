@@ -164,6 +164,8 @@ trait AuthenticatesUsers
      */
     protected function guard()
     {
-        return Auth::guard();
+		if(Auth::guard('sinhvien')->check())
+        	return Auth::guard('sinhvien');
+		return Auth::guard();
     }
 }

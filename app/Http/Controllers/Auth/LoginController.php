@@ -26,7 +26,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/';
 
     /**
      * Create a new controller instance.
@@ -59,21 +59,24 @@ class LoginController extends Controller
       if($request->option == 'pdt'){
 		  if (Auth::attempt(['username' => $request->username, 'password' => $request->password], $request->remember)) {
 			// if successful, then redirect to their intended location
-			return redirect()->intended(route('pdt.dashboard'));
+			return redirect()->route('pdt.home');
 		  }
 		  // if unsuccessful, then redirect back to the login with the form data
 		  return redirect()->back()->withInput($request->only('username', 'remember'));
 	  }else{
+		  
 		  $sv = sinhvien::where('username','=',$request->username)->value('id');
 		  if($sv != null){ 
 			Auth::guard('sinhvien')->loginUsingId($sv,$request->remember);			  
 			// if successful, then redirect to their intended location
+			
 			$result = $this->svlogin($request->username, $request->password);
+			
 			if($result == 302){
-				return redirect()->intended(route('sv.dashboard'));
+				return redirect()->route('sv.home');
 			}
 		  	else{ 
-				Auth::logout(); 
+				Auth::guard()->logout(); 
 				return redirect()->back()->withInput($request->only('username', 'remember'));
 			}
 		  }else{ 
@@ -83,6 +86,35 @@ class LoginController extends Controller
 	  }
 	  
     }
+	
+	/**
+     * Log the user out of the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function logout(Request $request)
+    {
+        $this->guard()->logout();
+
+        $request->session()->invalidate();
+
+        return redirect('/');
+    }
+	
+	/**
+     * Get the guard to be used during authentication.
+     *
+     * @return \Illuminate\Contracts\Auth\StatefulGuard
+     */
+    protected function guard()
+    {
+		if(Auth::guard('sinhvien')->check())
+        	return Auth::guard('sinhvien');
+		return Auth::guard('web');
+    }
+	
+	
 	
 	protected function svlogin(string $username, string $password){
 		$url = 'http://ctmail.vnu.edu.vn/webmail/src/redirect.php';
