@@ -15,7 +15,7 @@ return [
 
     'defaults' => [
         'guard' => 'web',
-        'passwords' => 'PDTs',
+        'passwords' => 'pdts',
     ],
 
     /*
@@ -38,12 +38,12 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'PDTs',
+            'provider' => 'pdts',
         ],
 
         'api' => [
             'driver' => 'token',
-            'provider' => 'PDTs',
+            'provider' => 'pdts',
         ],
 		'sinhvien' => [
             'driver' => 'session',
@@ -74,7 +74,7 @@ return [
     */
 
     'providers' => [
-        'PDTs' => [
+        'pdts' => [
             'driver' => 'eloquent',
             'model' => App\PDT::class,
         ],
@@ -105,8 +105,8 @@ return [
     */
 
     'passwords' => [
-        'PDTs' => [
-            'provider' => 'PDTs',
+        'pdts' => [
+            'provider' => 'pdts',
             'table' => 'password_resets',
             'expire' => 60,
         ],

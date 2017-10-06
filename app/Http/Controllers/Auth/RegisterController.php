@@ -57,8 +57,8 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => 'required|string|max:255',
-			'username' => 'required|string|email|max:255|unique:PDTs',
-            'email' => 'required|string|email|max:255|unique:PDTs',
+			'username' => 'required|string|max:255|unique:pdts',
+            'email' => 'required|string|email|max:255|unique:pdts',
             'password' => 'required|string|min:6|confirmed',
         ]);
     }
@@ -73,7 +73,7 @@ class RegisterController extends Controller
     {
         return PDT::create([
             'name' => $data['name'],
-			'username'=>$data['username'],
+			'username' => $data['username'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
         ]);
