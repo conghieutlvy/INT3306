@@ -14,8 +14,8 @@
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('home', 'PDTController@index');
-Route::get('home_sv', 'SinhvienController@index');
+Route::get('home', 'PDTController@index')->name('pdt.dashboard');
+Route::get('home_sv', 'SinhvienController@index')->name('sv.dashboard');
 
 
 
@@ -32,15 +32,15 @@ Route::get('home_sv', 'SinhvienController@index');
 Route::group(['prefix' => 'auth'], function () {
 	Route::get('login', [
 	  'as' => 'login',
-	  'uses' => 'LoginController@getLogin'
+	  'uses' => 'Auth\LoginController@getLogin'
 	]);
 	Route::post('login', [
 	  'as' => '',
-	  'uses' => 'LoginController@postLogin'
+	  'uses' => 'Auth\LoginController@postLogin'
 	]);
 	Route::post('logout', [
 	  'as' => 'logout',
-	  'uses' => 'LoginController@logout'
+	  'uses' => 'Auth\LoginController@logout'
 	]);
 	
 	// Password Reset Routes...

@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class PDT extends Authenticatable
 {
     use Notifiable;
-
+	public $table = "pdts";
     /**
      * The attributes that are mass assignable.
      *
