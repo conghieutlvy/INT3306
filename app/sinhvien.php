@@ -17,7 +17,7 @@ class sinhvien extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'username', 'TEN SINH VIEN',
+        'username', 'name',
     ];
 
     /**
