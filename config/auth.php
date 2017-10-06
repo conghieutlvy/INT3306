@@ -15,7 +15,7 @@ return [
 
     'defaults' => [
         'guard' => 'web',
-        'passwords' => 'users',
+        'passwords' => 'PDTs',
     ],
 
     /*
@@ -38,12 +38,21 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'PDTs',
         ],
 
         'api' => [
             'driver' => 'token',
-            'provider' => 'users',
+            'provider' => 'PDTs',
+        ],
+		'sinhvien' => [
+            'driver' => 'session',
+            'provider' => 'sinhviens',
+        ],
+
+        'sinhvien-api' => [
+            'driver' => 'token',
+            'provider' => 'sinhviens',
         ],
     ],
 
@@ -65,9 +74,13 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        'PDTs' => [
             'driver' => 'eloquent',
-            'model' => App\User::class,
+            'model' => App\PDT::class,
+        ],
+		'sinhviens' => [
+            'driver' => 'eloquent',
+            'model' => App\sinhvien::class,
         ],
 
         // 'users' => [
@@ -92,8 +105,8 @@ return [
     */
 
     'passwords' => [
-        'users' => [
-            'provider' => 'users',
+        'PDTs' => [
+            'provider' => 'PDTs',
             'table' => 'password_resets',
             'expire' => 60,
         ],
