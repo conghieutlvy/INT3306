@@ -3,6 +3,8 @@
 /storage/*.key
 /.idea
 /.vagrant
+/vendor
+.evn
 Homestead.json
 Homestead.yaml
 npm-debug.log
