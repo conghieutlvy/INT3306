@@ -14,6 +14,13 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('import', function () {
+    return view('importDemo');
+});
+
+Route::post('import', 'DBController@import');
+
 Route::group(['prefix' => 'pdt', 'middleware'=> 'pdt'], function () {
 	Route::get('home', 'PDTController@index')->name('pdt.home');
 });
@@ -22,15 +29,6 @@ Route::group(['prefix' => 'sinhvien', 'middleware' => 'sv'], function () {
 	Route::get('home_sv', 'SinhvienController@index')->name('sv.home');
 	
 });
-
-
-
-
-
-
-
-
-
 
 Route::group(['prefix' => 'auth'], function () {
 	Route::get('login', [
