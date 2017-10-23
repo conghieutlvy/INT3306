@@ -17,7 +17,7 @@ class sinhvien extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'username', 'name',
+        'username', 'Tên', 'Ngày sinh', 'Lớp khóa học',
     ];
 
     /**

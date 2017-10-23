@@ -23,8 +23,11 @@ Route::get('QL_LMH', function () {
     return view('QL_LMH');
 });
 
-Route::post('QL_LMH/tree', 'DBController@treeTest');
-Route::get('QL_LMH/tree', 'DBController@treeTest');
+Route::post('QL_LMH/{hocky}/{namhoc_id}/{id}', 'DBController@treeTest');
+
+Route::get('QL_LMH/{tb}/{fkey}/{id}', 'DBController@treeTest');
+Route::post('QL_LMH/{tb}/{fkey}/{id}', 'DBController@treeTest');
+
 Route::post('import', 'DBController@import');
 
 Route::group(['prefix' => 'pdt', 'middleware'=> 'pdt'], function () {

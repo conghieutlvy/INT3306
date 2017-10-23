@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Tests;
+use App\hocky;
+use DB;
 class DBController extends Controller
 {
     public function import(Request $request){
@@ -42,37 +43,63 @@ class DBController extends Controller
 					 fclose($fileopen); 
 				 }
 	}
-	public function treeTest(Request $request){
-		$data = [['id'=> '1', 'text' => '1', 'parent_id'=>'0'],
-				['id'=> '11', 'text' => '11', 'parent_id'=>'1'],
-					['id'=> '111', 'text' => '111', 'parent_id'=>'11'],
-					['id'=> '112', 'text' => '112', 'parent_id'=>'11'],
-			['id'=> '2', 'text' => '2', 'parent_id'=>'0'],
-				['id'=> '21', 'text' => '21', 'parent_id'=>'2']];
-
+	protected function getData($tb,$fkey,$val){
+		$data = DB::table($tb)->where($fkey,$val)->get();
+		return json_decode(json_encode($data),true);
+	}
+	public function treeTest($tb,$fkey,$id){
+		$namhoc = json_decode(json_encode(DB::table('namhoc')->get()),true);
+		$data = $this->getData($tb,$fkey,$id);
 		
 		$itemsByReference = array();
-		$json = "[";
 		//Create node			
+		foreach($namhoc as $key => &$item) {
+				$itemsByReference[$item['id']] = &$item;
+				$item['text'] = $item['nam hoc'];
+				// Children array:
+				$itemsByReference[$item['id']]['nodes'] = array(); 
+		}
+		
+		//Set children array
 		foreach($data as $key => &$item) {
+				$temp = $item['id'];
+				$item['id'] = $item['namhoc_id'].'-'.$item['id'];
+				$item['text'] = $item['hoc ky'];
+				$itemsByReference[$item['namhoc_id'].'-'.$temp['id']] = &$item;
+				// Children array:
+				$itemsByReference[$item['namhoc_id'].'-'.$temp['id']]['nodes'] = array();
+				// Parent array
+				if(isset($itemsByReference[$item['namhoc_id']])) {
+					$itemsByReference[$item['namhoc_id']]['nodes'][] = &$item;
+				}	 
+		}
+		return json_encode($namhoc);	
+	}
+	public function initNode($table){
+		$data = DB::table($tb)->get();
+		$data = json_decode(json_encode($data),true);
+	}
+	public function createNode($parent, $txtParent, $children, $txtChildren, $parent_id){
+		$itemsByReference = array();
+		//Create parent
+		foreach($parent as $key => &$item) {
 			$itemsByReference[$item['id']] = &$item;
+			$item['text'] = $item[$txtParent];
 			// Children array:
 			$itemsByReference[$item['id']]['nodes'] = array(); 
 		}
 		//Set children array
-		foreach($data as $key => &$item) {
-			if($item['parent_id'] && isset($itemsByReference[$item['parent_id']])) {
-				$itemsByReference [$item['parent_id']]['nodes'][] = &$item;
-			} 
+		foreach($children as $key => &$item) {
+			$temp = $item['id'];
+			$item['id'] = $item[$parent_id].'-'.$item['id'];
+			$item['text'] = $item[$txtChildren];
+			$itemsByReference[$item[$parent_id].'-'.$temp['id']] = &$item;
+			// Children array:
+			$itemsByReference[$item[$parent_id].'-'.$temp['id']]['nodes'] = array();
+			// Parent array
+			if(isset($itemsByReference[$item[$parent_id]])) {
+				$itemsByReference[$item[$parent_id]]['nodes'][] = &$item;
+			}	 
 		}
-		//Encode
-		foreach ($data as $key => $value) {
-			if(!$value['parent_id'] && !isset($itemsByReference[$value['parent_id']])) {
-				$json .= json_encode($value).",";
-			}
-		}
-		$json = trim($json,',');
-		$json .= "]";
-		return $json;
 	}
 }

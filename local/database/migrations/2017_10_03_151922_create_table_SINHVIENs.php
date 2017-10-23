@@ -15,8 +15,10 @@ class CreateTableSINHVIENs extends Migration
     {
         Schema::create('SINHVIENs', function (Blueprint $table) {
             $table->increments('id');
-			$table->string('name');
-			$table->integer('username')->unique();	
+			$table->string('Tên');
+			$table->integer('username')->unique();
+            $table->datetime('Ngày sinh');
+            $table->string('Lớp khóa học');	
 			$table->rememberToken();
             $table->timestamps();
         });
