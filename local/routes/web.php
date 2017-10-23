@@ -19,6 +19,12 @@ Route::get('import', function () {
     return view('importDemo');
 });
 
+Route::get('QL_LMH', function () {
+    return view('QL_LMH');
+});
+
+Route::post('QL_LMH/tree', 'DBController@treeTest');
+Route::get('QL_LMH/tree', 'DBController@treeTest');
 Route::post('import', 'DBController@import');
 
 Route::group(['prefix' => 'pdt', 'middleware'=> 'pdt'], function () {
