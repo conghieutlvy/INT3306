@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTableSINHVIENLOPMONHOC extends Migration
+class CreateTableFILEs extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,15 @@ class CreateTableSINHVIENLOPMONHOC extends Migration
      */
     public function up()
     {
-        Schema::create('sinhvien_lopmonhoc', function (Blueprint $table) {
+        Schema::create('files', function (Blueprint $table) {
             $table->increments('id');
-			$table->integer('sinhvien_id')->unsigned();
-			$table->integer('lopmonhoc_id')->unsigned();
+			$table->string('Đường dẫn');
+			$table->integer('lopmonhoc_id')->unsigned();;
+			$table->integer('user_id')->unsigned();;
             $table->timestamps();
 			
-			$table->foreign('sinhvien_id')->references('id')->on('sinhviens')->onUpdate('cascade');
 			$table->foreign('lopmonhoc_id')->references('id')->on('lopmonhocs')->onUpdate('cascade');
+			$table->foreign('user_id')->references('id')->on('pdts')->onUpdate('cascade');
         });
     }
 
@@ -31,6 +32,6 @@ class CreateTableSINHVIENLOPMONHOC extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sinhvien_lopmonhoc');
+        Schema::dropIfExists('files');
     }
 }

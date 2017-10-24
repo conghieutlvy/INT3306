@@ -23,10 +23,14 @@ Route::get('QL_LMH', function () {
     return view('QL_LMH');
 });
 
-Route::post('QL_LMH/{hocky}/{namhoc_id}/{id}', 'DBController@treeTest');
+Route::post('QL_LMH/hocky', 'DBController@initNode');
 
-Route::get('QL_LMH/{tb}/{fkey}/{id}', 'DBController@treeTest');
-Route::post('QL_LMH/{tb}/{fkey}/{id}', 'DBController@treeTest');
+Route::post('QL_LMH/hocky/{hocky_id}', 'DBController@hockyExpand');
+
+Route::post('QL_LMH/lmh/{lopmonhoc_id}', 'DBController@getLMH');
+
+Route::get('QL_LMH/lmh/{lopmonhoc_id}', 'DBController@getLMH');
+
 
 Route::post('import', 'DBController@import');
 

@@ -13,12 +13,13 @@ class CreateTableSINHVIENs extends Migration
      */
     public function up()
     {
-        Schema::create('SINHVIENs', function (Blueprint $table) {
+        Schema::create('sinhviens', function (Blueprint $table) {
             $table->increments('id');
 			$table->string('Tên');
 			$table->integer('username')->unique();
-            $table->datetime('Ngày sinh');
-            $table->string('Lớp khóa học');	
+            $table->date('Ngày sinh');
+            $table->string('Lớp khóa học');
+			$table->boolean('Kích hoạt')->default(1);	
 			$table->rememberToken();
             $table->timestamps();
         });
@@ -31,6 +32,6 @@ class CreateTableSINHVIENs extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('SINHVIENs');
+        Schema::dropIfExists('sinhviens');
     }
 }

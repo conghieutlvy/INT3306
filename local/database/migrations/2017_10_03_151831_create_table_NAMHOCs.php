@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTableHOCKY extends Migration
+class CreateTableNAMHOCs extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,11 @@ class CreateTableHOCKY extends Migration
      */
     public function up()
     {
-        Schema::create('HOCKY', function (Blueprint $table) {
+        Schema::create('namhocs', function (Blueprint $table) {
             $table->increments('id');
-			$table->string('HOC KY');
-			$table->integer('NAMHOC_id')->unsigned();
+			$table->string('Năm học');
+			$table->boolean('Kích hoạt')->default(1);
             $table->timestamps();
-			
-			$table->foreign('NAMHOC_id')->references('id')->on('NAMHOC')->onDelete('cascade');
         });
     }
 
@@ -30,6 +28,6 @@ class CreateTableHOCKY extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('HOCKY');
+        Schema::dropIfExists('namhocs');
     }
 }

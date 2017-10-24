@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTableGIANGVIENs extends Migration
+class CreateTableMONHOCs extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,13 @@ class CreateTableGIANGVIENs extends Migration
      */
     public function up()
     {
-        Schema::create('GIANGVIENs', function (Blueprint $table) {
+        Schema::create('monhocs', function (Blueprint $table) {
             $table->increments('id');
-			$table->string('TEN GV');
+			$table->string('Mã môn học');
+			$table->string('Tên môn học');
+			
             $table->timestamps();
+
         });
     }
 
@@ -27,6 +30,6 @@ class CreateTableGIANGVIENs extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('GIANGVIENs');
+        Schema::dropIfExists('monhocs');
     }
 }

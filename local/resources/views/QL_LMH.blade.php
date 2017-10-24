@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
     <div class="container-fluid">
 	<div class="row">
 		<div class="col-md-3">
@@ -167,35 +168,8 @@
 								</th>
 							</tr>
 						</thead>
-						<tbody>
-							<tr>
-								<td>
-									1
-								</td>
-								<td>
-									TB - Monthly
-								</td>
-								<td>
-									01/04/2012
-								</td>
-								<td>
-									Default
-								</td>
-							</tr>
-							<tr class="active">
-								<td>
-									1
-								</td>
-								<td>
-									TB - Monthly
-								</td>
-								<td>
-									01/04/2012
-								</td>
-								<td>
-									Approved
-								</td>
-							</tr>
+						<tbody id="tbbody">
+							
 						</tbody>
 					</table> 
 					
@@ -204,25 +178,78 @@
 		</div>
 	</div>
 </div>
-<script>
-	$(document).ready(function(){
-		$.ajax({
-			url:'QL_LMH/hocky/namhoc_id/1',
-			type: "POST",
-			dataType: "json",
-			headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-			success:function(dataRespone){
-				$('#treeview').treeview({
-					data:dataRespone,
-					levels:1,
-				});
-			}
-		});
+<script type="text/javascript">
+        $(document).ready(function () {
+            // Create jqxTree
+            var tree = $('#treeview');
+            var source = null;
+            $.ajax({
+                async: false,
+                url:'QL_LMH/hocky',
+                type: "POST",
+                //dataType: "json",
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                success: function (data, status, xhr) {
+                    source = jQuery.parseJSON(data);
+                }
+            });
 
-	});
-	function expandNode(){
-		$('#tree').treeview('getSelected', nodeId);
+            tree.jqxTree({ source: source});
 
-	}
-</script>
+            tree.on('select', function (event){
+            	var item = tree.jqxTree('getSelectedItem', event.args.element);
+            	var label = item.label;
+            	if(!label.includes("Học kỳ") && !label.includes("Năm học")){
+            		var value = item.value;
+            		var arr = value.split("-");
+            		var url = arr[arr.length - 1];
+            		$.ajax({
+	                    url: "QL_LMH/lmh/" + url,
+	                    type: "POST",
+	                    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+	                    success: function (data, status, xhr) {
+	                    	var obj = jQuery.parseJSON(data);
+	                    	$('#MA_LMH').html(obj['thong tin']['ten lop mon hoc']);
+	                    	var count = 0;
+	                    	$('#tbbody').html('');
+	                    	var sinhviens = obj['sinh vien'];
+	                    	var len = sinhviens.length;
+	                    	while(count < len){
+	                    		$('#tbbody').append("<tr>	<td>"+ (count++ + 1) +"</td><td>" + sinhviens[count-1]['username'] +"</td><td>"+ sinhviens[count-1]['name'] + "</td><td>Default</td>	</tr>");
+	                    	};
+	                    	
+	                    	//alert("<tr>	<td>"+ count +"</td>"+ obj['sinh vien']['username'] +"<td>" +obj['sinh vien']['name'] + "</td><td>01/04/201</td><td>Default</td></tr>");
+	                    }
+	                });
+            	}
+            });
+            tree.on('expand', function (event) {
+                var label = tree.jqxTree('getItem', event.args.element).label;
+                var $element = $(event.args.element);
+                var loader = false;
+                var loaderItem = null;
+                var children = $element.find('ul:first').children();
+                $.each(children, function () {
+                    var item = tree.jqxTree('getItem', this);
+                    if (item && item.label == 'Loading...') {
+                        loaderItem = item;
+                        loader = true;
+                        return false
+                    };
+                });
+                if (loader) {
+                    $.ajax({
+                        url: "QL_LMH/hocky/" + loaderItem.value,
+                        type: "POST",
+                        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                        success: function (data, status, xhr) {
+                            var items = jQuery.parseJSON(data);
+                            tree.jqxTree('addTo', items, $element[0]);
+                            tree.jqxTree('removeItem', loaderItem.element);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 @endsection

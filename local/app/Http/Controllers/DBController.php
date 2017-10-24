@@ -43,63 +43,58 @@ class DBController extends Controller
 					 fclose($fileopen); 
 				 }
 	}
-	protected function getData($tb,$fkey,$val){
-		$data = DB::table($tb)->where($fkey,$val)->get();
-		return json_decode(json_encode($data),true);
-	}
-	public function treeTest($tb,$fkey,$id){
-		$namhoc = json_decode(json_encode(DB::table('namhoc')->get()),true);
-		$data = $this->getData($tb,$fkey,$id);
-		
+	public function initNode(){
+		$namhoc = json_decode(json_encode(DB::table('namhoc')->select('id','nam hoc')->orderBy('id','desc')->get()),true);
+		$data = json_decode(json_encode(DB::table('hocky')->select('id','hoc ky', 'namhoc_id')->get()),true);
 		$itemsByReference = array();
-		//Create node			
+		//Create node
+		$namhoc['0']['expanded'] = true;
 		foreach($namhoc as $key => &$item) {
-				$itemsByReference[$item['id']] = &$item;
-				$item['text'] = $item['nam hoc'];
+				$item['label'] = "Năm học ".$item['nam hoc'];
 				// Children array:
-				$itemsByReference[$item['id']]['nodes'] = array(); 
+				unset($item['nam hoc']);
+				//$item['expanded'] = true;
+				$itemsByReference[$item['id']] = &$item;
+				$itemsByReference[$item['id']]['items'] = array(); 
 		}
 		
 		//Set children array
 		foreach($data as $key => &$item) {
-				$temp = $item['id'];
-				$item['id'] = $item['namhoc_id'].'-'.$item['id'];
-				$item['text'] = $item['hoc ky'];
-				$itemsByReference[$item['namhoc_id'].'-'.$temp['id']] = &$item;
+			$temp = $item['id'];
+				$newId = $item['namhoc_id'].'-'.$item['id'];
+				//$temp = $item['id'];
+				$item['id'] = $newId;
+				$item['label'] = $item['hoc ky']; 
+				unset($item['hoc ky']);
+				$itemsByReference[$newId] = &$item;
 				// Children array:
-				$itemsByReference[$item['namhoc_id'].'-'.$temp['id']]['nodes'] = array();
+				$itemsByReference[$newId]['items'] = [["value" => $temp , "label" => "Loading..."]];
+
 				// Parent array
 				if(isset($itemsByReference[$item['namhoc_id']])) {
-					$itemsByReference[$item['namhoc_id']]['nodes'][] = &$item;
+					$itemsByReference[$item['namhoc_id']]['items'][] = &$item;
 				}	 
 		}
-		return json_encode($namhoc);	
+		return json_encode($namhoc) ;
 	}
-	public function initNode($table){
-		$data = DB::table($tb)->get();
-		$data = json_decode(json_encode($data),true);
+
+	public function hockyExpand($id){
+		$namhoc_id = DB::table('hocky')->where('id',$id)->value('namhoc_id');
+
+		$data = json_decode(json_encode(DB::table('lopmonhoc')->select('id','ten lop mon hoc','hocky_id')->where("hocky_id",$id)->orderBy('ten lop mon hoc','asc')->get()),true);
+		foreach($data as $key => &$item) {
+			$newId = $namhoc_id.'-'.$item['hocky_id'].'-'.$item['id'];
+			$item['id'] = $newId;
+			$item['label'] = $item['ten lop mon hoc'];
+			$item['value'] = $newId;
+			$item['items'] = array();
+		}	
+		return json_encode($data) ;
 	}
-	public function createNode($parent, $txtParent, $children, $txtChildren, $parent_id){
-		$itemsByReference = array();
-		//Create parent
-		foreach($parent as $key => &$item) {
-			$itemsByReference[$item['id']] = &$item;
-			$item['text'] = $item[$txtParent];
-			// Children array:
-			$itemsByReference[$item['id']]['nodes'] = array(); 
-		}
-		//Set children array
-		foreach($children as $key => &$item) {
-			$temp = $item['id'];
-			$item['id'] = $item[$parent_id].'-'.$item['id'];
-			$item['text'] = $item[$txtChildren];
-			$itemsByReference[$item[$parent_id].'-'.$temp['id']] = &$item;
-			// Children array:
-			$itemsByReference[$item[$parent_id].'-'.$temp['id']]['nodes'] = array();
-			// Parent array
-			if(isset($itemsByReference[$item[$parent_id]])) {
-				$itemsByReference[$item[$parent_id]]['nodes'][] = &$item;
-			}	 
-		}
+
+	public function getLMH($id){
+		$res['thong tin'] = DB::table('lopmonhoc')->select('ten lop mon hoc')->where("id",$id)->first();
+		$res['sinh vien'] = DB::table('sinhvien_lopmonhoc')->where('lopmonhoc_id',$id)->join('lopmonhoc','lopmonhoc.id','sinhvien_lopmonhoc.lopmonhoc_id')->join('sinhviens','sinhviens.id','sinhvien_lopmonhoc.sinhvien_id')->select('name','username')->get();
+		return json_encode($res);
 	}
 }
