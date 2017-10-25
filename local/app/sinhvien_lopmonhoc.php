@@ -8,7 +8,7 @@ class sinhvien_lopmonhoc extends Model
 {
 	protected $table = 'sinhvien_lopmonhoc';
     protected $fillable = [
-        'SINHVIEN_id', 'LOPMONHOC_id',
+        'sinhvien_id', 'lopmonhoc_id',
     ];
 	public $timestamps = true;
 }

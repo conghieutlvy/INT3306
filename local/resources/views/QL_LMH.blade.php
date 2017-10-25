@@ -103,9 +103,9 @@
 							<label> Cập nhật điểm:</label>
 						</div>
 						<div class="col-md-8">
-							<form action="import" enctype="multipart/form-data" method="POST">
+							<form action="{{ route('importPdf') }}" enctype="multipart/form-data" method="POST">
 				                {{ csrf_field() }}
-				                <input type="file" name="file" required="true">
+				                <input type="file" name="filePdf" required="true">
 				                <br/>
 				                <button type="submit" class="btn btn btn-primary pull-right" style="margin-right: 10%">
 									Cập nhật
@@ -130,17 +130,18 @@
 						<h4> Thêm bằng File:</h4>
 						<div class="row">
 							<div class="col-md-4">
-								<label> Chọn File:</label>
+								<label> Chọn File CSV:</label>
 							</div>
 							<div class="col-md-8">
-								<form action="import" enctype="multipart/form-data" method="POST">
+								<form action="" id="formImportSV" role="form" enctype="multipart/form-data" method="POST">
 					                {{ csrf_field() }}
-					                <input type="file" name="file" required="true">
-					                <br/>
-					                <button type="submit" class="btn btn btn-primary pull-right" style="margin-right: 10%">
+					                <input  class="form-group" id="fileSV" type="file" name="fileSV" required="true">
+									<button id="btImportSV" type="button" class="btn btn btn-primary pull-right" style="margin-right: 10%">
 										Thêm
 									</button>
 		            			</form>
+
+		            			<p id="pImportSV"> </p>
 		            		</div>
 	            		</div>
 					</div>
@@ -179,7 +180,50 @@
 	</div>
 </div>
 <script type="text/javascript">
+
         $(document).ready(function () {
+        	$('#btImportSV').click(function(event){
+                var file = $('#fileSV').get()[0].files[0];
+                var fileUpload = $('#fileSV').val();
+                if(!file){
+                    alert("Vui lòng chọn file");
+                    return;
+                }
+                if (fileUpload && (fileUpload.indexOf('csv') === -1)) {
+                    alert("Vui lòng chọn file CSV");
+                    return;
+                }
+                $.ajax({
+                    url: "QL_LMH/importSV",
+                    type: "POST",
+                    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                    data: new FormData($('#formImportSV')[0]),
+                    processData: false,
+                    contentType: false,
+                    success: function(data, status, xhr){
+                        $('#formImportSV')[0].reset();
+                        alert('Lỗi: ' + data);
+                        $('#pImportSV').html(data);
+                    }
+
+                });
+               /* var file_data = $('#fileSV').prop('files')[0];
+                var form_data = new FormData();
+                form_data.append('file', file_data);
+	    		$.ajax({
+	    			//async: false,
+	    			url: "QL_LMH/importSV",
+	    			type: "POST",
+	    			headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+	    			data: form_data,
+	    			success: function(data, status, xhr){
+	    				$('#pImportSV').html(data + "Xong");
+	    			}
+	    		});*/
+                return;
+    		})
+
+
             // Create jqxTree
             var tree = $('#treeview');
             var source = null;
@@ -209,7 +253,11 @@
 	                    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
 	                    success: function (data, status, xhr) {
 	                    	var obj = jQuery.parseJSON(data);
-	                    	$('#MA_LMH').html(obj['thong tin']['ten lop mon hoc']);
+                            $('#NH_LMH').html(obj['thong tin']['Năm học']);
+                            $('#HK_LMH').html(obj['thong tin']['Học kỳ']);
+	                    	$('#MA_LMH').html(obj['thong tin']['Mã lớp môn học']);
+                            $('#TEN_LMH').html(obj['thong tin']['Tên lớp môn học']);
+                            $('#DIEM_LMH').html(obj['thong tin']['Trạng thái điểm']?"Đã có điểm":"Chưa có điểm");
 	                    	var count = 0;
 	                    	$('#tbbody').html('');
 	                    	var sinhviens = obj['sinh vien'];
@@ -217,8 +265,6 @@
 	                    	while(count < len){
 	                    		$('#tbbody').append("<tr>	<td>"+ (count++ + 1) +"</td><td>" + sinhviens[count-1]['username'] +"</td><td>"+ sinhviens[count-1]['name'] + "</td><td>Default</td>	</tr>");
 	                    	};
-	                    	
-	                    	//alert("<tr>	<td>"+ count +"</td>"+ obj['sinh vien']['username'] +"<td>" +obj['sinh vien']['name'] + "</td><td>01/04/201</td><td>Default</td></tr>");
 	                    }
 	                });
             	}
@@ -250,6 +296,7 @@
                     });
                 }
             });
+            
         });
-    </script>
+</script>
 @endsection

@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class file extends Model
 {
-	protected $table = 'file';
+	protected $table = 'files';
     protected $fillable = [
-        'PATH', 'LOPMONHOC_id', 'USER_id',
+        'Đường dẫn', 'lopmonhoc_id', 'user_id',
     ];
 	public $timestamps = true;
 }

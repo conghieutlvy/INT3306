@@ -31,8 +31,11 @@ Route::post('QL_LMH/lmh/{lopmonhoc_id}', 'DBController@getLMH');
 
 Route::get('QL_LMH/lmh/{lopmonhoc_id}', 'DBController@getLMH');
 
+Route::post('QL_LMH/importPdf', 'DBController@importPdf')->name('importPdf');
 
-Route::post('import', 'DBController@import');
+//Route::get('QL_LMH/importSV', 'DBController@importSV');
+
+Route::post('QL_LMH/importSV', 'DBController@importSV');
 
 Route::group(['prefix' => 'pdt', 'middleware'=> 'pdt'], function () {
 	Route::get('home', 'PDTController@index')->name('pdt.home');

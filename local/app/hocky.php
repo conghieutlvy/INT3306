@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class hocky extends Model
 {
-	protected $table = 'hocky';
+	protected $table = 'hockys';
     protected $fillable = [
-        'HOC KY', 'NAMHOC_id'
+        'Học kỳ', 'namhoc_id'
     ];
 	public $timestamps = true;
 }

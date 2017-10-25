@@ -17,7 +17,7 @@ class CreateTableLOPMONHOCs extends Migration
             $table->increments('id');
 			$table->string('Mã lớp môn học');
 			$table->string('Tên lớp môn học');
-			
+			$table->boolean('Trạng thái điểm')->default(0);
 			$table->integer('hocky_id')->unsigned();
 			
             $table->timestamps();
