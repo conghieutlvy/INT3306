@@ -3,16 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\hocky;
 use DB;
 use App\sinhvien;
 class DBController extends Controller
 {
-    public function importPdf(Request $request){
-        $file = $request->file('filePdf');
-        if(isset($file) && $file->getSize() > 0){
-
-        }
+    public function addPdf(Request $request, $lopmonhoc_id){
+        $Upfile = $request->file('filePdf');
+        if(isset($Upfile) && $Upfile->getSize() > 0){
+            $files = Storage::files('PDF/1/1');
+            $fileName = $lopmonhoc_id.'.pdf';
+            foreach($files as $file){
+                if($file == $fileName) Storage::delete($file);
+            }
+            $path = Storage::putFileAs('PDF/1/1',$Upfile,$fileName);
+            DB::table('files')->insert(
+               ['Đường dẫn'=> $path,
+               'lopmonhoc_id'=> $lopmonhoc_id,
+               'user_id' => 1]
+            );
+        } else return 0;
+        return 1;
     }
     public function importSv(Request $request){
 		$file = $request->file('fileSV');
@@ -26,15 +38,6 @@ class DBController extends Controller
 				$arr[0] = $arr[2];
 				$arr[2] = $temp;
 				$newData = implode('-',$arr);
-				/*$c = DB::table('sinhviens')->insert(
-					['username' => $getData[0],
-					'Họ tên' => $getData[1],
-					'Ngày sinh' => $newData,
-					'Lớp khóa học' => $getData[3]]
-					);
-                   if(!$c){
-                       $res[$count++] = $getData;
-                   }*/
                 $t = new sinhvien();
 				$t->username = $getData[0];
 				$t['Họ tên'] = $getData[1];

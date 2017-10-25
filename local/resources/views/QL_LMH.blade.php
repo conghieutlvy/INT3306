@@ -42,138 +42,158 @@
 			</div>
 			-->
 		</div>
-		<div id="detail" class="col-md-9">
-			<div class="row">
-				<div class="col-md-6">
-					<h3 class="text-info text-left">
-						Thông tin lớp môn học
-					</h3>
-					<div class="row">
-						<div class="col-md-4">
-							<label>
-								Năm học:
-							</label>
-						</div>
-						<div id="NH_LMH" class="col-md-8">
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-4">
-							<label>
-								Học kỳ:
-							</label>
-						</div>
-						<div id="HK_LMH" class="col-md-8">
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-4">
-							<label>
-								Tên lớp môn học:
-							</label>
-						</div>
-						<div id="TEN_LMH" class="col-md-8">
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-4">
-							<label>
-								Mã lớp môn học:
-							</label>
-						</div>
-						<div id="MA_LMH" class="col-md-8">
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6">
-					<h3 class="text-info text-left">
-						Thông tin điểm
-					</h3>
-					<div class="row">
-						<div class="col-md-4">
-							<label>
-								Trạng thái điểm:
-							</label>
-						</div>
-						<div id="DIEM_LMH" class="col-md-8">
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-4">
-							<label> Cập nhật điểm:</label>
-						</div>
-						<div class="col-md-8">
-							<form action="{{ route('importPdf') }}" enctype="multipart/form-data" method="POST">
-				                {{ csrf_field() }}
-				                <input type="file" name="filePdf" required="true">
-				                <br/>
-				                <button type="submit" class="btn btn btn-primary pull-right" style="margin-right: 10%">
-									Cập nhật
-								</button>
-	            			</form>
-	            		</div>
-            		</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-md-12">
-					<h3 class="text-info text-left">
-							Thêm sinh viên vào lớp môn học:
-					</h3>
+		<div class="col-md-9">
+			<div id="detail" style="display: none">
+				<div class="row">
 					<div class="col-md-6">
-						<h4> Thêm bằng Form:</h4>
-						<form>
-							
-						</form>
-					</div>
-					<div class="col-md-6">
-						<h4> Thêm bằng File:</h4>
+						<h3 class="text-info text-left">
+							Thông tin lớp môn học
+						</h3>
 						<div class="row">
 							<div class="col-md-4">
-								<label> Chọn File CSV:</label>
+								<label>
+									Năm học:
+								</label>
+							</div>
+							<div id="NH_LMH" class="col-md-8">
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-4">
+								<label>
+									Học kỳ:
+								</label>
+							</div>
+							<div id="HK_LMH" class="col-md-8">
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-4">
+								<label>
+									Tên lớp môn học:
+								</label>
+							</div>
+							<div id="TEN_LMH" class="col-md-8">
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-4">
+								<label>
+									Mã lớp môn học:
+								</label>
+							</div>
+							<div id="MA_LMH" class="col-md-8">
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<h3 class="text-info text-left">
+							Thông tin điểm
+						</h3>
+						<div class="row">
+							<div class="col-md-4">
+								<label>
+									Trạng thái điểm:
+								</label>
+							</div>
+							<div id="DIEM_LMH" class="col-md-8">
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-4">
+								<label> Cập nhật điểm:</label>
 							</div>
 							<div class="col-md-8">
-								<form action="" id="formImportSV" role="form" enctype="multipart/form-data" method="POST">
-					                {{ csrf_field() }}
-					                <input  class="form-group" id="fileSV" type="file" name="fileSV" required="true">
-									<button id="btImportSV" type="button" class="btn btn btn-primary pull-right" style="margin-right: 10%">
-										Thêm
-									</button>
-		            			</form>
+								<form id="formAddFile" action="" enctype="multipart/form-data" method="POST">
+									<input id="filePdf"class="form-group" type="file" name="filePdf" required="true">
+								</form>
+								<button id="btAddFile" type="button" class="btn btn btn-primary pull-right" style="margin-right: 10%">
+									Cập nhật
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<h3 class="text-info text-left">
+								Thêm sinh viên vào lớp môn học:
+						</h3>
+						<div class="col-md-6">
+							<h4> Thêm bằng Form:</h4>
+							<form>
 
-		            			<p id="pImportSV"> </p>
-		            		</div>
-	            		</div>
+							</form>
+						</div>
+						<div class="col-md-6">
+							<h4> Thêm bằng File:</h4>
+							<div class="row">
+								<div class="col-md-4">
+									<label> Chọn File CSV: (Chỉ gồm mã sinh viên)</label>
+								</div>
+								<div class="col-md-8">
+									<form action="" id="formImportSV" role="form" enctype="multipart/form-data" method="POST">
+										<input  class="form-group" id="fileSV" type="file" name="fileSV" required="true">
+										<button id="btImportSV" type="button" class="btn btn btn-primary pull-right" style="margin-right: 10%">
+											Thêm
+										</button>
+									</form>
+
+									<p id="pImportSV"> </p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+					<h3 class="text-info text-left">
+						Thông tin sinh viên lớp môn học:
+					</h3>
+						<table class="table" border="5">
+							<thead>
+								<tr>
+									<th width="5%">
+										STT
+									</th>
+									<th width="15%">
+										Mã sinh viên
+									</th>
+									<th with="50%">
+										Tên sinh viên
+									</th>
+									<th width="30%">
+										Lớp khóa học
+									</th>
+								</tr>
+							</thead>
+							<tbody id="tbbody">
+							</tbody>
+						</table>
+
 					</div>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-md-12">
-				<h3 class="text-info text-left">
-					Thông tin sinh viên lớp môn học:
-				</h3>
-					<table class="table" border="5">
-						<thead>
-							<tr>
-								<th width="5%">
-									STT
-								</th>
-								<th width="15%">
-									Mã sinh viên
-								</th>
-								<th with="50%">
-									Tên sinh viên
-								</th>
-								<th width="30%">
-									Lớp khóa học
-								</th>
-							</tr>
-						</thead>
-						<tbody id="tbbody">
-							
-						</tbody>
-					</table> 
-					
+			<div id="importSV_HK" style="padding-top: 3%;display: none">
+				<div class="row">
+					<div class="col-md-12">
+						<h3 class="text-info text-left">
+							Thêm sinh viên vào các lớp môn học (Học kỳ hiện tại):
+						</h3>
+					</div>
+				</div>
+				<div class="row" style="padding-top: 3%">
+					<div class="col-md-3" style="padding-left: 3%">
+						<label> Chọn File CSV: (Chỉ gồm mã sinh viên và mã lớp môn học)</label>
+					</div>
+					<div class="col-md-9">
+						<form action="" id="formImportSV_HK" role="form" enctype="multipart/form-data" method="POST">
+							<input  class="form-group" id="fileSV_HK" type="file" name="fileSV_HK" required="true">
+						</form>
+						<button id="btImportSV_HK" type="button" class="btn btn btn-primary pull-right" style="margin-right: 10%">
+							Thêm
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -182,6 +202,7 @@
 <script type="text/javascript">
 
         $(document).ready(function () {
+
         	$('#btImportSV').click(function(event){
                 var file = $('#fileSV').get()[0].files[0];
                 var fileUpload = $('#fileSV').val();
@@ -202,26 +223,40 @@
                     contentType: false,
                     success: function(data, status, xhr){
                         $('#formImportSV')[0].reset();
-                        alert('Lỗi: ' + data);
-                        $('#pImportSV').html(data);
+                        alert(data);
+                        //$('#pImportSV').html(data);
                     }
 
                 });
-               /* var file_data = $('#fileSV').prop('files')[0];
-                var form_data = new FormData();
-                form_data.append('file', file_data);
-	    		$.ajax({
-	    			//async: false,
-	    			url: "QL_LMH/importSV",
-	    			type: "POST",
-	    			headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-	    			data: form_data,
-	    			success: function(data, status, xhr){
-	    				$('#pImportSV').html(data + "Xong");
-	    			}
-	    		});*/
                 return;
     		})
+            $('#btAddFile').click(function(event){
+                var file = $('#filePdf').get()[0].files[0];
+                var fileUpload = $('#filePdf').val();
+                if(!file){
+                    alert("Vui lòng chọn file");
+                    return;
+                }
+                if (fileUpload && (fileUpload.indexOf('pdf') === -1)) {
+                    alert("Vui lòng chọn file PDF");
+                    return;
+                }
+                var id = tree.jqxTree('getSelectedItem').value.split("-")[2];
+                $.ajax({
+                    url: "QL_LMH/addPdf/" + id,
+                    type: "POST",
+                    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                    data: new FormData($('#formAddFile')[0]),
+                    processData: false,
+                    contentType: false,
+                    success: function(data, status, xhr){
+                        $('#formAddFile')[0].reset();
+                        alert(data);
+                    }
+
+                });
+                return;
+            })
 
 
             // Create jqxTree
@@ -243,7 +278,18 @@
             tree.on('select', function (event){
             	var item = tree.jqxTree('getSelectedItem', event.args.element);
             	var label = item.label;
-            	if(!label.includes("Học kỳ") && !label.includes("Năm học")){
+            	if(label.includes("Học kỳ")) {
+                    $('#importSV_HK').show();
+                    $('form').each(function( index ) {
+                        $('form')[index].reset();
+                    });
+                    $('#detail').hide();
+                } else if(!label.includes("Học kỳ") && !label.includes("Năm học")){
+					$('#detail').show();
+					$('form').each(function( index ) {
+                        $('form')[index].reset();
+                    });
+                    $('#importSV_HK').hide();
             		var value = item.value;
             		var arr = value.split("-");
             		var url = arr[arr.length - 1];
@@ -267,7 +313,10 @@
 	                    	};
 	                    }
 	                });
-            	}
+            	} else {
+                    $('#detail').hide();
+                    $('#importSV_HK').hide();
+                }
             });
             tree.on('expand', function (event) {
                 var label = tree.jqxTree('getItem', event.args.element).label;

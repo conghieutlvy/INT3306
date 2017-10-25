@@ -31,9 +31,7 @@ Route::post('QL_LMH/lmh/{lopmonhoc_id}', 'DBController@getLMH');
 
 Route::get('QL_LMH/lmh/{lopmonhoc_id}', 'DBController@getLMH');
 
-Route::post('QL_LMH/importPdf', 'DBController@importPdf')->name('importPdf');
-
-//Route::get('QL_LMH/importSV', 'DBController@importSV');
+Route::post('QL_LMH/addPdf/{lopmonhoc_id}', 'DBController@addPdf');
 
 Route::post('QL_LMH/importSV', 'DBController@importSV');
 
