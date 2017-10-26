@@ -132,9 +132,9 @@
 									<label> Chọn File CSV: (Chỉ gồm mã sinh viên)</label>
 								</div>
 								<div class="col-md-8">
-									<form action="" id="formImportSV" role="form" enctype="multipart/form-data" method="POST">
-										<input  class="form-group" id="fileSV" type="file" name="fileSV" required="true">
-										<button id="btImportSV" type="button" class="btn btn btn-primary pull-right" style="margin-right: 10%">
+									<form action="" id="formImportSV_LMH" role="form" enctype="multipart/form-data" method="POST">
+										<input  class="form-group" id="fileSV_LMH" type="file" name="fileSV_LMH" required="true">
+										<button id="btImportSV_LMH" type="button" class="btn btn btn-primary pull-right" style="margin-right: 10%">
 											Thêm
 										</button>
 									</form>
@@ -195,6 +195,12 @@
 						</button>
 					</div>
 				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<p id="pImportSV_HK">
+						</p>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -202,9 +208,19 @@
 <script type="text/javascript">
 
         $(document).ready(function () {
+			$('#btImportSV_HK').click(function () {
+                var hocky_id = tree.jqxTree('getSelectedItem').id.split("-")[1];
+                var url = 'QL_LMH/importSV_HK/' + hocky_id;
+				var data = importSV(url,'formImportSV_HK','fileSV_HK');
 
-        	$('#btImportSV').click(function(event){
-                var file = $('#fileSV').get()[0].files[0];
+            });
+            $('#btImportSV_LMH').click(function () {
+                var lopmonhoc_id = tree.jqxTree('getSelectedItem').id.split("-")[2];
+                var url = 'QL_LMH/importSV_LMH/' + lopmonhoc_id;
+                importSV(url,'formImportSV_LMH','fileSV_LMH');
+            });
+        	/*$('#btImportSV').click(function(event){
+                var file = $('#fileSV')[0].files[0];
                 var fileUpload = $('#fileSV').val();
                 if(!file){
                     alert("Vui lòng chọn file");
@@ -214,6 +230,9 @@
                     alert("Vui lòng chọn file CSV");
                     return;
                 }
+                var data = new FormData($('#formImportSV')[0]);
+                console.log(data);
+
                 $.ajax({
                     url: "QL_LMH/importSV",
                     type: "POST",
@@ -230,6 +249,7 @@
                 });
                 return;
     		})
+    		*/
             $('#btAddFile').click(function(event){
                 var file = $('#filePdf').get()[0].files[0];
                 var fileUpload = $('#filePdf').val();
@@ -241,9 +261,9 @@
                     alert("Vui lòng chọn file PDF");
                     return;
                 }
-                var id = tree.jqxTree('getSelectedItem').value.split("-")[2];
+                var lopmonhoc_id = tree.jqxTree('getSelectedItem').id.split("-")[2];
                 $.ajax({
-                    url: "QL_LMH/addPdf/" + id,
+                    url: "QL_LMH/addPdf/" + lopmonhoc_id,
                     type: "POST",
                     headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                     data: new FormData($('#formAddFile')[0]),
@@ -284,15 +304,14 @@
                         $('form')[index].reset();
                     });
                     $('#detail').hide();
-                } else if(!label.includes("Học kỳ") && !label.includes("Năm học")){
+                } else
+				if(!label.includes("Học kỳ") && !label.includes("Năm học")){
 					$('#detail').show();
 					$('form').each(function( index ) {
                         $('form')[index].reset();
                     });
                     $('#importSV_HK').hide();
-            		var value = item.value;
-            		var arr = value.split("-");
-            		var url = arr[arr.length - 1];
+            		var url = item.id.split('-')[2];
             		$.ajax({
 	                    url: "QL_LMH/lmh/" + url,
 	                    type: "POST",
@@ -347,5 +366,43 @@
             });
             
         });
+	function importSV(url,formId,fileId){
+        fileId = '#' + fileId;
+        formId = '#' + formId;
+        var file = $(fileId).get()[0].files[0];
+        var fileUpload = $(fileId).val();
+        if(!file){
+            alert("Vui lòng chọn file");
+            return;
+        }
+        if (fileUpload && (fileUpload.indexOf('csv') === -1)) {
+            alert("Vui lòng chọn file CSV");
+            return;
+        }
+        $.ajax({
+            url: url,
+            type: "POST",
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            data: new FormData($(formId)[0]),
+            processData: false,
+            contentType: false,
+            success: function(data, status, xhr){
+                $(formId)[0].reset();
+                alert(data);
+                var obj =  jQuery.parseJSON(data);
+                if(!obj['status']){
+                    var stringFail = '';
+                    $.each(obj['fail'], function ( index, value ) {
+                   		stringFail += value + "<br/>";
+					});
+                    $('#pImportSV_HK').removeClass('alert-success'.addClass('text-left alert alert-danger'));
+                	$('#pImportSV_HK').html("Vui lòng xem lại các trường sau, chúng có thể sai hoặc đã được thêm trước đó: <br/>" + stringFail);
+                } else {
+                    $('#pImportSV_HK').removeClass('alert-danger').addClass('text-left alert alert-success');
+                    $('#pImportSV_HK').html("Thêm Thành công!");
+				};
+            }
+		});
+	};
 </script>
 @endsection

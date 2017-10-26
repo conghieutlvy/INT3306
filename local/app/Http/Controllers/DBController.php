@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\hocky;
 use DB;
 use App\sinhvien;
 class DBController extends Controller
@@ -23,16 +22,17 @@ class DBController extends Controller
                'lopmonhoc_id'=> $lopmonhoc_id,
                'user_id' => 1]
             );
-        } else return 0;
-        return 1;
+        } else return "Cap nhat file khong thanh cong";
+        return 'Cap nhat file thanh cong';
     }
     public function importSv(Request $request){
+    	return json_encode($request->file());
 		$file = $request->file('fileSV');
 		$res = array();
 		$count = 0;
         if(isset($file) && $file->getSize() > 0){
             $fileopen = fopen($file, "r");
-            while (($getData = fgetcsv($fileopen, 10000, ",")) !== FALSE){
+            while (($getData = fgetcsv($fileopen, 1000, ",")) !== FALSE){
 				$arr = explode('/',$getData[2]);
 				$temp = $arr[0];
 				$arr[0] = $arr[2];
@@ -52,6 +52,38 @@ class DBController extends Controller
         }
         return json_encode($count);
 	}
+	public function importSV_HK(Request $request, $hocky_id){
+		$file = $request->file('fileSV_HK');
+		$res['status'] = 1;
+		$count = 0;
+		$res['fail'] = array();
+        if(isset($file) && $file->getSize() > 0) {
+            $fileopen = fopen($file, "r");
+            while (($getData = fgetcsv($fileopen, 30, ",")) !== FALSE) {
+                $sinhvien_id = DB::table('sinhviens')->where('username', $getData[0])->value('id');
+                $lopmonhoc_id = DB::table('lopmonhocs')->where([
+                    ['hocky_id', $hocky_id],
+                    ['Mã lớp môn học', $getData[1]]
+                ])->value('id');
+                return json_encode(DB::table('sinhvien_lopmonhoc')->insertOrFail(['sinhvien_id' => $sinhvien_id, 'lopmonhoc_id' => $lopmonhoc_id]));
+                /*if (isset($sinhvien_id) && isset($lopmonhoc_id)) {
+                    if (!DB::table('sinhvien_lopmonhoc')->insert(['sinhvien_id' => $sinhvien_id, 'lopmonhoc_id' => $lopmonhoc_id])){
+                        $res['fail'][$count++] = $getData;
+                        $res['status'] = 0;
+                    }
+                } else {
+                    $res['fail'][$count++] = $getData;
+                    $res['status'] = 0;
+                }*/
+            }
+            fclose($fileopen);
+        }
+		return json_encode($res);
+	}
+	public function importSV_LMH(Request $request, $lopmonhoc_id){
+
+		return "importSV_LMH";
+	}
 	public function initNode(){
 		$namhoc = json_decode(json_encode(DB::table('namhocs')->select('id','Năm học')->orderBy('id','desc')->get()),true);
 		$data = json_decode(json_encode(DB::table('hockys')->select('id','Học kỳ', 'namhoc_id')->get()),true);
@@ -69,15 +101,14 @@ class DBController extends Controller
 		
 		//Set children array
 		foreach($data as $key => &$item) {
-			$temp = $item['id'];
+		    $temp = $item['id'];
 				$newId = $item['namhoc_id'].'-'.$item['id'];
-				//$temp = $item['id'];
 				$item['id'] = $newId;
 				$item['label'] = $item['Học kỳ']; 
 				unset($item['Học kỳ']);
 				$itemsByReference[$newId] = &$item;
 				// Children array:
-				$itemsByReference[$newId]['items'] = [["value" => $temp , "label" => "Loading..."]];
+				$itemsByReference[$newId]['items'] = [['value'=> $temp, "label" => "Loading..."]];
 
 				// Parent array
 				if(isset($itemsByReference[$item['namhoc_id']])) {
@@ -94,8 +125,7 @@ class DBController extends Controller
 		foreach($data as $key => &$item) {
 			$newId = $namhoc_id.'-'.$id.'-'.$item['id'];
 			$item['id'] = $newId;
-			$item['label'] = $item['Tên lớp môn học']." - ".$item["Mã lớp môn học"];
-			$item['value'] = $newId;
+			$item['label'] = $item["Mã lớp môn học"]." - ".$item['Tên lớp môn học'];
 			$item['items'] = array();
 		}	
 		return json_encode($data) ;

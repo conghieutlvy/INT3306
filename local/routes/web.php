@@ -35,6 +35,10 @@ Route::post('QL_LMH/addPdf/{lopmonhoc_id}', 'DBController@addPdf');
 
 Route::post('QL_LMH/importSV', 'DBController@importSV');
 
+Route::post('QL_LMH/importSV_LMH/{lopmonhoc_id}', 'DBController@importSV_LMH');
+
+Route::post('QL_LMH/importSV_HK/{hocky_id}', 'DBController@importSV_HK');
+
 Route::group(['prefix' => 'pdt', 'middleware'=> 'pdt'], function () {
 	Route::get('home', 'PDTController@index')->name('pdt.home');
 });
