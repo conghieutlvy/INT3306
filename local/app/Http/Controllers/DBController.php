@@ -54,9 +54,8 @@ class DBController extends Controller
 	}
 	public function importSV_HK(Request $request, $hocky_id){
 		$file = $request->file('fileSV_HK');
-		$res['status'] = 1;
-		$count = 0;
-		$res['fail'] = array();
+		$res['status'] = [1,1];
+		$res['fail'] = $res['exists'] = array();
         if(isset($file) && $file->getSize() > 0) {
             $fileopen = fopen($file, "r");
             while (($getData = fgetcsv($fileopen, 30, ",")) !== FALSE) {
@@ -65,16 +64,18 @@ class DBController extends Controller
                     ['hocky_id', $hocky_id],
                     ['Mã lớp môn học', $getData[1]]
                 ])->value('id');
-                return json_encode(DB::table('sinhvien_lopmonhoc')->insertOrFail(['sinhvien_id' => $sinhvien_id, 'lopmonhoc_id' => $lopmonhoc_id]));
-                /*if (isset($sinhvien_id) && isset($lopmonhoc_id)) {
-                    if (!DB::table('sinhvien_lopmonhoc')->insert(['sinhvien_id' => $sinhvien_id, 'lopmonhoc_id' => $lopmonhoc_id])){
-                        $res['fail'][$count++] = $getData;
-                        $res['status'] = 0;
+                if (isset($sinhvien_id) && isset($lopmonhoc_id)) {
+                    $check = DB::table('sinhvien_lopmonhoc')->where([['sinhvien_id', $sinhvien_id],['lopmonhoc_id', $lopmonhoc_id]])->first();
+                    if (!$check){
+                        DB::table('sinhvien_lopmonhoc')->insert([['sinhvien_id' => $sinhvien_id, 'lopmonhoc_id' => $lopmonhoc_id]]);
+                    } else {
+                        array_push($res['exists'],$getData);
+                        $res['status'][0] = 0;
                     }
                 } else {
-                    $res['fail'][$count++] = $getData;
-                    $res['status'] = 0;
-                }*/
+                    array_push($res['fail'],$getData);
+                    $res['status'][1] = 0;
+                }
             }
             fclose($fileopen);
         }

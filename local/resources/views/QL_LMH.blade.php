@@ -195,7 +195,7 @@
 						</button>
 					</div>
 				</div>
-				<div class="row">
+				<div class="row" style="padding-top: 3%">
 					<div class="col-md-12">
 						<p id="pImportSV_HK">
 						</p>
@@ -299,13 +299,16 @@
             	var item = tree.jqxTree('getSelectedItem', event.args.element);
             	var label = item.label;
             	if(label.includes("Học kỳ")) {
+            	    // Show & Clear data
                     $('#importSV_HK').show();
                     $('form').each(function( index ) {
                         $('form')[index].reset();
                     });
+                    $('#pImportSV_HK').removeClass('alert-danger alert-success').empty();
                     $('#detail').hide();
                 } else
 				if(!label.includes("Học kỳ") && !label.includes("Năm học")){
+                    // Show & Clear data
 					$('#detail').show();
 					$('form').each(function( index ) {
                         $('form')[index].reset();
@@ -388,16 +391,23 @@
             contentType: false,
             success: function(data, status, xhr){
                 $(formId)[0].reset();
-                alert(data);
                 var obj =  jQuery.parseJSON(data);
-                if(!obj['status']){
+                /*if(!obj['status'][0]){
                     var stringFail = '';
-                    $.each(obj['fail'], function ( index, value ) {
+                    $.each(obj['exists'], function ( index, value ) {
                    		stringFail += value + "<br/>";
 					});
-                    $('#pImportSV_HK').removeClass('alert-success'.addClass('text-left alert alert-danger'));
-                	$('#pImportSV_HK').html("Vui lòng xem lại các trường sau, chúng có thể sai hoặc đã được thêm trước đó: <br/>" + stringFail);
-                } else {
+                    $('#pImportSV_HK').removeClass('alert-success alert-danger').addClass('text-left alert alert-warning');
+                	$('#pImportSV_HK').html("Vui lòng xem lại các trường sau, chúng đã được thêm trước đó: <br/>" + stringFail);
+                } else*/
+                if(!obj['status'][1]){
+                    var stringFail = '';
+                    $.each(obj['fail'], function ( index, value ) {
+                        stringFail += value + "<br/>";
+                    });
+                    $('#pImportSV_HK').removeClass('alert-success ').addClass('text-left alert alert-danger');
+                    $('#pImportSV_HK').html("Các trường sau bị sai, vui lòng xem lại dữ liệu: <br/>" + stringFail);
+				} else {
                     $('#pImportSV_HK').removeClass('alert-danger').addClass('text-left alert alert-success');
                     $('#pImportSV_HK').html("Thêm Thành công!");
 				};
