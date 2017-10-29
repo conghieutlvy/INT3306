@@ -134,13 +134,20 @@
 								<div class="col-md-8">
 									<form action="" id="formImportSV_LMH" role="form" enctype="multipart/form-data" method="POST">
 										<input  class="form-group" id="fileSV_LMH" type="file" name="fileSV_LMH" required="true">
+										<div class="form-group">
+											<div class="progress">
+												<div id="prcImportSV_LMH" class="progress-bar progress-bar-success" role="progressbar" style="width:0%">0%</div>
+											</div>
+										</div>
 										<button id="btImportSV_LMH" type="button" class="btn btn btn-primary pull-right" style="margin-right: 10%">
 											Thêm
 										</button>
 									</form>
-
-									<p id="pImportSV"> </p>
 								</div>
+							</div>
+						</div>
+						<div class="row" style="padding-top: 3%">
+							<div id="msgImportSV_LMH" class="col-md-12">
 							</div>
 						</div>
 					</div>
@@ -156,13 +163,16 @@
 									<th width="5%">
 										STT
 									</th>
-									<th width="15%">
+									<th width="10%">
 										Mã sinh viên
 									</th>
-									<th with="50%">
+									<th with="45%">
 										Tên sinh viên
 									</th>
-									<th width="30%">
+									<th width="20%">
+										Ngày sinh
+									</th>
+									<th width="20%">
 										Lớp khóa học
 									</th>
 								</tr>
@@ -189,6 +199,11 @@
 					<div class="col-md-9">
 						<form action="" id="formImportSV_HK" role="form" enctype="multipart/form-data" method="POST">
 							<input  class="form-group" id="fileSV_HK" type="file" name="fileSV_HK" required="true">
+							<div class="form-group">
+								<div class="progress">
+									<div id="prcImportSV_HK" class="progress-bar progress-bar-success" role="progressbar" style="width:0%">0%</div>
+								</div>
+                    		</div>
 						</form>
 						<button id="btImportSV_HK" type="button" class="btn btn btn-primary pull-right" style="margin-right: 10%">
 							Thêm
@@ -196,9 +211,7 @@
 					</div>
 				</div>
 				<div class="row" style="padding-top: 3%">
-					<div class="col-md-12">
-						<p id="pImportSV_HK">
-						</p>
+					<div id="msgImportSV_HK" class="col-md-12">
 					</div>
 				</div>
 			</div>
@@ -211,13 +224,13 @@
 			$('#btImportSV_HK').click(function () {
                 var hocky_id = tree.jqxTree('getSelectedItem').id.split("-")[1];
                 var url = 'QL_LMH/importSV_HK/' + hocky_id;
-				var data = importSV(url,'formImportSV_HK','fileSV_HK');
+				var data = importSV(url,'formImportSV_HK','fileSV_HK','prcImportSV_HK','msgImportSV_HK');
 
             });
             $('#btImportSV_LMH').click(function () {
                 var lopmonhoc_id = tree.jqxTree('getSelectedItem').id.split("-")[2];
                 var url = 'QL_LMH/importSV_LMH/' + lopmonhoc_id;
-                importSV(url,'formImportSV_LMH','fileSV_LMH');
+                importSV(url,'formImportSV_LMH','fileSV_LMH','prcImportSV_LMH','msgImportSV_LMH');
             });
         	/*$('#btImportSV').click(function(event){
                 var file = $('#fileSV')[0].files[0];
@@ -331,7 +344,7 @@
 	                    	var sinhviens = obj['sinh vien'];
 	                    	var len = sinhviens.length;
 	                    	while(count < len){
-	                    		$('#tbbody').append("<tr>	<td>"+ (count++ + 1) +"</td><td>" + sinhviens[count-1]['username'] +"</td><td>"+ sinhviens[count-1]['name'] + "</td><td>Default</td>	</tr>");
+	                    		$('#tbbody').append("<tr>	<td>"+ (++count) +"</td><td>" + sinhviens[count-1]['username'] +"</td><td>"+ sinhviens[count-1]['Họ tên'] + "</td><td>"+ sinhviens[count-1]['Ngày sinh'] + "</td><td>"+ sinhviens[count-1]['Lớp khóa học'] + "</td>	</tr>");
 	                    	};
 	                    }
 	                });
@@ -369,9 +382,11 @@
             });
             
         });
-	function importSV(url,formId,fileId){
+	function importSV(url,formId,fileId,processId, msgId){
         fileId = '#' + fileId;
         formId = '#' + formId;
+        processId = '#' + processId;
+        msgId = '#' + msgId;
         var file = $(fileId).get()[0].files[0];
         var fileUpload = $(fileId).val();
         if(!file){
@@ -389,9 +404,39 @@
             data: new FormData($(formId)[0]),
             processData: false,
             contentType: false,
+            beforeSend: function(jqXHR, settings) {
+                var self = this;
+                var xhr = settings.xhr;
+                settings.xhr = function() {
+                    var output = xhr();
+                    output.onreadystatechange = function() {
+                        if (typeof(self.readyStateChanged) == "function") {
+                            self.readyStateChanged(this);
+                        }
+                    };
+                    return output;
+                };
+            },
+            // listen to the readyStates
+            readyStateChanged: function(jqXHR) {
+                // if it's '3', then it's an update,
+                if (jqXHR.readyState == 3) {
+                    var responeTxt = jqXHR.responseText.split(',');
+                    var responeleng = responeTxt[0];
+                    var processnow = (responeTxt.length == 1)? 0  : responeTxt[responeTxt.length - 1];
+                    var percent = Math.floor(processnow/responeleng*100);
+                    // update an element with the last number the script output. The script output is contained in jqXHR.responseText.
+                    $(processId).css('width',percent + '%');
+                    $(processId).text(percent + "%");
+                }
+            },
+            // handle an error
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert(errorThrown);
+            },
             success: function(data, status, xhr){
                 $(formId)[0].reset();
-                var obj =  jQuery.parseJSON(data);
+                var obj =  jQuery.parseJSON(data.substr(data.indexOf("{")));
                 /*if(!obj['status'][0]){
                     var stringFail = '';
                     $.each(obj['exists'], function ( index, value ) {
@@ -405,11 +450,9 @@
                     $.each(obj['fail'], function ( index, value ) {
                         stringFail += value + "<br/>";
                     });
-                    $('#pImportSV_HK').removeClass('alert-success ').addClass('text-left alert alert-danger');
-                    $('#pImportSV_HK').html("Các trường sau bị sai, vui lòng xem lại dữ liệu: <br/>" + stringFail);
+                    $(msgId).html("<p class = \"text-left alert alert-danger\">Các trường sau bị sai, vui lòng xem lại dữ liệu: <br/>" + stringFail + "</p>");
 				} else {
-                    $('#pImportSV_HK').removeClass('alert-danger').addClass('text-left alert alert-success');
-                    $('#pImportSV_HK').html("Thêm Thành công!");
+                    $(msgId).html("<p class = \"text-left alert alert-success\">Thêm Thành công!</p>");
 				};
             }
 		});

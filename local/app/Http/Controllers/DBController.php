@@ -53,28 +53,43 @@ class DBController extends Controller
         return json_encode($count);
 	}
 	public function importSV_HK(Request $request, $hocky_id){
+        set_time_limit(300);
 		$file = $request->file('fileSV_HK');
 		$res['status'] = [1,1];
 		$res['fail'] = $res['exists'] = array();
         if(isset($file) && $file->getSize() > 0) {
             $fileopen = fopen($file, "r");
+            $arrTemp = array();
             while (($getData = fgetcsv($fileopen, 30, ",")) !== FALSE) {
-                $sinhvien_id = DB::table('sinhviens')->where('username', $getData[0])->value('id');
+                array_push($arrTemp,$getData);
+            }
+            $len = count($arrTemp,0);
+            echo($len);
+            ob_flush();
+            flush();
+            $count = 0;
+            while ($count < $len) {
+                $sinhvien_id = DB::table('sinhviens')->where('username', $arrTemp[$count][0])->value('id');
                 $lopmonhoc_id = DB::table('lopmonhocs')->where([
                     ['hocky_id', $hocky_id],
-                    ['Mã lớp môn học', $getData[1]]
+                    ['Mã lớp môn học', $arrTemp[$count][1]]
                 ])->value('id');
                 if (isset($sinhvien_id) && isset($lopmonhoc_id)) {
                     $check = DB::table('sinhvien_lopmonhoc')->where([['sinhvien_id', $sinhvien_id],['lopmonhoc_id', $lopmonhoc_id]])->first();
                     if (!$check){
                         DB::table('sinhvien_lopmonhoc')->insert([['sinhvien_id' => $sinhvien_id, 'lopmonhoc_id' => $lopmonhoc_id]]);
                     } else {
-                        array_push($res['exists'],$getData);
+                        array_push($res['exists'],$arrTemp[$count]);
                         $res['status'][0] = 0;
                     }
                 } else {
-                    array_push($res['fail'],$getData);
+                    array_push($res['fail'],$arrTemp[$count]);
                     $res['status'][1] = 0;
+                }
+                if(++$count % 100 == 0 || $count == $len){
+                    echo(",".$count);
+                    ob_flush();
+                    flush();
                 }
             }
             fclose($fileopen);
@@ -82,7 +97,6 @@ class DBController extends Controller
 		return json_encode($res);
 	}
 	public function importSV_LMH(Request $request, $lopmonhoc_id){
-
 		return "importSV_LMH";
 	}
 	public function initNode(){
@@ -135,7 +149,8 @@ class DBController extends Controller
 	public function getLMH($id){
 
 		$res['thong tin'] = DB::table('lopmonhocs')->where("lopmonhocs.id",$id)->join('hockys','hockys.id','lopmonhocs.hocky_id')->join('namhocs','namhocs.id','hockys.namhoc_id')->select('Tên lớp môn học','Mã lớp môn học','Năm học','Học kỳ','Trạng thái điểm')->first();
-		$res['sinh vien'] = DB::table('sinhvien_lopmonhoc')->where('lopmonhoc_id',$id)->join('sinhviens','sinhviens.id','sinhvien_lopmonhoc.sinhvien_id')->select('Họ tên','username')->get();
+		$res['sinh vien'] = DB::table('sinhvien_lopmonhoc')->where('lopmonhoc_id',$id)->join('sinhviens','sinhviens.id','sinhvien_lopmonhoc.sinhvien_id')->select('Họ tên','username','Ngày sinh','Lớp khóa học')->get();
+
 		return json_encode($res);
 	}
 }
