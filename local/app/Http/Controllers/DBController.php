@@ -70,6 +70,67 @@ class DBController extends Controller
             $count = 0;
             while ($count < $len) {
                 $sinhvien_id = DB::table('sinhviens')->where('username', $arrTemp[$count][0])->value('id');
+                if(isset($sinhvien_id)) {
+                    $lopmonhoc_id = DB::table('lopmonhocs')->where([
+                        ['hocky_id', $hocky_id],
+                        ['Mã lớp môn học', $arrTemp[$count][1]]
+                    ])->value('id');
+                    if(!isset($lopmonhoc_id)){
+                        $monhoc = DB::table('monhocs')->where('Mã môn học',explode(' ',$arrTemp[$count][1])[0])->value('Tên môn học');
+                        if(isset($monhoc)) {
+                            $lopmonhoc_id = DB::table('lopmonhocs')->insertGetId(['Mã lớp môn học' => $arrTemp[$count][1],'Tên lớp môn học' => $monhoc,'hocky_id'=>$hocky_id]);
+                            $check = DB::table('sinhvien_lopmonhoc')->where([['sinhvien_id', $sinhvien_id], ['lopmonhoc_id', $lopmonhoc_id]])->first();
+                            if (!$check) {
+                                DB::table('sinhvien_lopmonhoc')->insert([['sinhvien_id' => $sinhvien_id, 'lopmonhoc_id' => $lopmonhoc_id]]);
+                            } else {
+                                array_push($res['exists'], $arrTemp[$count]);
+                                $res['status'][0] = 0;
+                            }
+                        }else{
+                            array_push($res['fail'],$arrTemp[$count]);
+                            $res['status'][1] = 0;
+                        }
+                    }else{
+                        $check = DB::table('sinhvien_lopmonhoc')->where([['sinhvien_id', $sinhvien_id], ['lopmonhoc_id', $lopmonhoc_id]])->first();
+                        if (!$check) {
+                            DB::table('sinhvien_lopmonhoc')->insert([['sinhvien_id' => $sinhvien_id, 'lopmonhoc_id' => $lopmonhoc_id]]);
+                        } else {
+                            array_push($res['exists'], $arrTemp[$count]);
+                            $res['status'][0] = 0;
+                        }
+                    }
+                } else {
+                    array_push($res['fail'],$arrTemp[$count]);
+                    $res['status'][1] = 0;
+                }
+                if(++$count % 100 == 0 || $count == $len){
+                    echo(",".$count);
+                    ob_flush();
+                    flush();
+                }
+            }
+            fclose($fileopen);
+        }
+		return json_encode($res);
+	}
+	public function importSV_LMH(Request $request, $lopmonhoc_id){
+        set_time_limit(300);
+        $file = $request->file('fileSV_HK');
+        $res['status'] = [1,1];
+        $res['fail'] = $res['exists'] = array();
+        if(isset($file) && $file->getSize() > 0) {
+            $fileopen = fopen($file, "r");
+            $arrTemp = array();
+            while (($getData = fgetcsv($fileopen, 30, ",")) !== FALSE) {
+                array_push($arrTemp,$getData);
+            }
+            $len = count($arrTemp,0);
+            echo($len);
+            ob_flush();
+            flush();
+            $count = 0;
+            while ($count < $len) {
+                $sinhvien_id = DB::table('sinhviens')->where('username', $arrTemp[$count][0])->value('id');
                 $lopmonhoc_id = DB::table('lopmonhocs')->where([
                     ['hocky_id', $hocky_id],
                     ['Mã lớp môn học', $arrTemp[$count][1]]
@@ -94,10 +155,7 @@ class DBController extends Controller
             }
             fclose($fileopen);
         }
-		return json_encode($res);
-	}
-	public function importSV_LMH(Request $request, $lopmonhoc_id){
-		return "importSV_LMH";
+        return json_encode($res);
 	}
 	public function initNode(){
 		$namhoc = json_decode(json_encode(DB::table('namhocs')->select('id','Năm học')->orderBy('id','desc')->get()),true);
