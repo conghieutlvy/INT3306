@@ -66,17 +66,16 @@ class LoginController extends Controller
 	  }else{
 		  
 		  $sv = sinhvien::where('username','=',$request->username)->value('id');
-		  if($sv != null){ 
-			Auth::guard('sinhvien')->loginUsingId($sv,$request->remember);			  
+		  if($sv){
 			// if successful, then redirect to their intended location
 			
 			$result = $this->svlogin($request->username, $request->password);
 			
 			if($result == 302){
+                Auth::guard('sinhvien')->loginUsingId($sv,$request->remember);
 				return redirect()->route('sv.home');
 			}
-		  	else{ 
-				Auth::guard()->logout(); 
+		  	else{
 				return redirect()->back()->withInput($request->only('username', 'remember'));
 			}
 		  }else{ 
