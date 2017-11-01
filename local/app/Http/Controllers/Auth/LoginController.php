@@ -57,33 +57,29 @@ class LoginController extends Controller
       ]);
 	
       if($request->option == 'pdt'){
-		  if (Auth::attempt(['username' => $request->username, 'password' => $request->password], $request->remember)) {
+		  if (Auth::guard('web')->attempt(['username' => $request->username, 'password' => $request->password], $request->remember)) {
 			// if successful, then redirect to their intended location
 			return redirect()->route('pdt.home');
 		  }
 		  // if unsuccessful, then redirect back to the login with the form data
 		  return redirect()->back()->withInput($request->only('username', 'remember'));
 	  }else{
-		  
-		  $sv = sinhvien::where('username','=',$request->username)->value('id');
+		  $sv = sinhvien::where('username','=',$request->username)->value('Kích hoạt');
 		  if($sv){
 			// if successful, then redirect to their intended location
-			
 			$result = $this->svlogin($request->username, $request->password);
-			
 			if($result == 302){
-                Auth::guard('sinhvien')->loginUsingId($sv,$request->remember);
+                Auth::guard('sinhvien')->attempt(['username'=>$request->username],$request->remember);
 				return redirect()->route('sv.home');
 			}
 		  	else{
 				return redirect()->back()->withInput($request->only('username', 'remember'));
 			}
-		  }else{ 
+		  }else{
 			  // if unsuccessful, then redirect back to the login with the form data
 			  return redirect()->back()->withInput($request->only('username', 'remember'));
 		  }
 	  }
-	  
     }
 	
 	/**
@@ -115,7 +111,7 @@ class LoginController extends Controller
 	
 	
 	
-	protected function svlogin(string $username, string $password){
+	protected function svlogin($username,$password){
 		$url = 'http://ctmail.vnu.edu.vn/webmail/src/redirect.php';
 		$data = array(
 		'login_username' => $username, 'secretkey' => $password, 'js_autodetect_results'=>1, 'just_logged_in' => 1);

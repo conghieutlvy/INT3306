@@ -19,9 +19,7 @@ Route::get('import', function () {
     return view('importDemo');
 });
 
-Route::get('QL_LMH', function () {
-    return view('QL_LMH');
-});
+Route::get('QL_LMH', 'DBController@QL_LMH');
 
 Route::post('QL_LMH/hocky', 'DBController@initNode');
 

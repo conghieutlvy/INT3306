@@ -6,8 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use DB;
 use App\sinhvien;
+use Auth;
 class DBController extends Controller
 {
+    public function QL_LMH(){
+        return view('QL_LMH');
+    }
     public function addPdf(Request $request, $lopmonhoc_id){
         $Upfile = $request->file('filePdf');
         if(isset($Upfile) && $Upfile->getSize() > 0){
