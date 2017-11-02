@@ -68,7 +68,7 @@
         <div class="flex-center position-ref full-height">
             @if (Route::has('login'))
                 <div class="top-right links">
-                    @if(Auth::guard('web')->check())
+                    @if(Auth::guard('pdt')->check())
                         <a href="{{ route('pdt.home') }}">Home</a>
                     @else
                     @if(Auth::guard('sinhvien')->check())

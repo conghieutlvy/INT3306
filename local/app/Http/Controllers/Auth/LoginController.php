@@ -26,7 +26,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/';
+    //protected $redirectTo = '/';
 
     /**
      * Create a new controller instance.
@@ -45,6 +45,8 @@ class LoginController extends Controller
      */
     public function getLogin()
     {
+        if(Auth::guard('sinhvien')->check()|| Auth::guard('pdt')->check())
+            return redirect()->route('welcome');
         return view('login');
     }
 	
@@ -57,7 +59,7 @@ class LoginController extends Controller
       ]);
 	
       if($request->option == 'pdt'){
-		  if (Auth::guard('web')->attempt(['username' => $request->username, 'password' => $request->password], $request->remember)) {
+		  if (Auth::guard('pdt')->attempt(['username' => $request->username, 'password' => $request->password], $request->remember)) {
 			// if successful, then redirect to their intended location
 			return redirect()->route('pdt.home');
 		  }
@@ -94,7 +96,7 @@ class LoginController extends Controller
 
         $request->session()->invalidate();
 
-        return redirect('/');
+        return redirect()->route('login');
     }
 	
 	/**
@@ -106,10 +108,8 @@ class LoginController extends Controller
     {
 		if(Auth::guard('sinhvien')->check())
         	return Auth::guard('sinhvien');
-		return Auth::guard('web');
+		return Auth::guard('pdt');
     }
-	
-	
 	
 	protected function svlogin($username,$password){
 		$url = 'http://ctmail.vnu.edu.vn/webmail/src/redirect.php';

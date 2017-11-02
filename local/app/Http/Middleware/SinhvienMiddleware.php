@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Auth;
+use Redirect;
 class SinhvienMiddleware
 {
     /**
@@ -17,6 +18,8 @@ class SinhvienMiddleware
     {
 		if (Auth::guard('sinhvien')->check()) {
             return $next($request);
+        } else if(Auth::guard('web')->check()){
+            return Redirect::back();
         }
 		return redirect()->route('login');
         

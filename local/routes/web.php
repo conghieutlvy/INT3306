@@ -13,7 +13,7 @@
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 Route::get('import', function () {
     return view('importDemo');
@@ -37,13 +37,17 @@ Route::post('QL_LMH/importSV_LMH/{lopmonhoc_id}', 'DBController@importSV_LMH');
 
 Route::post('QL_LMH/importSV_HK/{hocky_id}', 'DBController@importSV_HK');
 
-Route::group(['prefix' => 'pdt', 'middleware'=> 'pdt'], function () {
+Route::group(['prefix' => 'pdt'], function () {
 	Route::get('home', 'PDTController@index')->name('pdt.home');
+    Route::get('QL_LMH', 'PDTController@QL_LMH');
 });
 
-Route::group(['prefix' => 'sinhvien', 'middleware' => 'sv'], function () {
+Route::group(['prefix' => 'sinhvien'], function () {
 	Route::get('home_sv', 'SinhvienController@index')->name('sv.home');
-	
+	Route::get('LMH','SinhvienController@LMH');
+    Route::post('LMH/hocky','DBController@initNode');
+    Route::post('LMH/hocky/{hocky_id}', 'DBController@hockyExpand');
+    Route::post('LMH/lmh/{lopmonhoc_id}', 'DBController@getLMH');
 });
 
 Route::group(['prefix' => 'auth'], function () {

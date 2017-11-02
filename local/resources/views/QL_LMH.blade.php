@@ -276,7 +276,7 @@
                 }
                 var lopmonhoc_id = tree.jqxTree('getSelectedItem').id.split("-")[2];
                 $.ajax({
-                    url: "QL_LMH/addPdf/" + lopmonhoc_id,
+                    url: "QL_LMH/addPdf/" + tree.jqxTree('getSelectedItem').id,
                     type: "POST",
                     headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                     data: new FormData($('#formAddFile')[0]),

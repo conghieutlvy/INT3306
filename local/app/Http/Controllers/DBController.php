@@ -15,17 +15,20 @@ class DBController extends Controller
     public function addPdf(Request $request, $lopmonhoc_id){
         $Upfile = $request->file('filePdf');
         if(isset($Upfile) && $Upfile->getSize() > 0){
-            $files = Storage::files('PDF/1/1');
-            $fileName = $lopmonhoc_id.'.pdf';
+            $arrTemp = explode('-',$lopmonhoc_id);
+            $dir = 'PDF/'.$arrTemp[0].'/'.$arrTemp[1];
+            $files = Storage::files($dir);
+            $fileName = $arrTemp[2];
             foreach($files as $file){
                 if($file == $fileName) Storage::delete($file);
             }
-            $path = Storage::putFileAs('PDF/1/1',$Upfile,$fileName);
+            $path = Storage::putFileAs($dir,$Upfile,$fileName);
             DB::table('files')->insert(
                ['Đường dẫn'=> $path,
                'lopmonhoc_id'=> $lopmonhoc_id,
                'user_id' => 1]
             );
+            DB::
         } else return "Cap nhat file khong thanh cong";
         return 'Cap nhat file thanh cong';
     }
@@ -135,10 +138,6 @@ class DBController extends Controller
             $count = 0;
             while ($count < $len) {
                 $sinhvien_id = DB::table('sinhviens')->where('username', $arrTemp[$count][0])->value('id');
-                $lopmonhoc_id = DB::table('lopmonhocs')->where([
-                    ['hocky_id', $hocky_id],
-                    ['Mã lớp môn học', $arrTemp[$count][1]]
-                ])->value('id');
                 if (isset($sinhvien_id) && isset($lopmonhoc_id)) {
                     $check = DB::table('sinhvien_lopmonhoc')->where([['sinhvien_id', $sinhvien_id],['lopmonhoc_id', $lopmonhoc_id]])->first();
                     if (!$check){
@@ -179,39 +178,45 @@ class DBController extends Controller
 		//Set children array
 		foreach($data as $key => &$item) {
 		    $temp = $item['id'];
-				$newId = $item['namhoc_id'].'-'.$item['id'];
-				$item['id'] = $newId;
-				$item['label'] = $item['Học kỳ']; 
-				unset($item['Học kỳ']);
-				$itemsByReference[$newId] = &$item;
-				// Children array:
-				$itemsByReference[$newId]['items'] = [['value'=> $temp, "label" => "Loading..."]];
+            $newId = $item['namhoc_id'].'-'.$item['id'];
+            $item['id'] = $newId;
+            $item['label'] = $item['Học kỳ'];
+            unset($item['Học kỳ']);
+            $itemsByReference[$newId] = &$item;
+            // Children array:
+            $itemsByReference[$newId]['items'] = [['value'=> $temp, "label" => "Loading..."]];
 
-				// Parent array
-				if(isset($itemsByReference[$item['namhoc_id']])) {
-					$itemsByReference[$item['namhoc_id']]['items'][] = &$item;
-				}	 
+            // Parent array
+            if(isset($itemsByReference[$item['namhoc_id']])) {
+                $itemsByReference[$item['namhoc_id']]['items'][] = &$item;
+            }
 		}
 		return json_encode($namhoc) ;
 	}
 
 	public function hockyExpand($id){
+	    $authSv = Auth::guard('sinhvien')->check()? Auth::guard('sinhvien')->user()['id']:0;
 		$namhoc_id = DB::table('hockys')->where('id',$id)->value('namhoc_id');
-
-		$data = json_decode(json_encode(DB::table('lopmonhocs')->select('id','Tên lớp môn học','Mã lớp môn học')->where("hocky_id",$id)->orderBy('Tên lớp môn học','asc')->get()),true);
+		if($authSv) $data = json_decode(json_encode(
+		    DB::table('sinhvien_lopmonhoc')->join('lopmonhocs','lopmonhocs.id','sinhvien_lopmonhoc.lopmonhoc_id')->select('lopmonhocs.id','Tên lớp môn học','Mã lớp môn học')
+                ->where([
+		        ['sinhvien_lopmonhoc.sinhvien_id',$authSv],
+                ['lopmonhocs.hocky_id',$id]
+            ])->orderBy('Tên lớp môn học','asc')->get()),true);
+		else $data = json_decode(json_encode(DB::table('lopmonhocs')->select('id','Tên lớp môn học','Mã lớp môn học')->where("hocky_id",$id)->orderBy('Tên lớp môn học','asc')->get()),true);
 		foreach($data as $key => &$item) {
 			$newId = $namhoc_id.'-'.$id.'-'.$item['id'];
 			$item['id'] = $newId;
 			$item['label'] = $item["Mã lớp môn học"]." - ".$item['Tên lớp môn học'];
 			$item['items'] = array();
-		}	
+		}
 		return json_encode($data) ;
 	}
 
 	public function getLMH($id){
 
 		$res['thong tin'] = DB::table('lopmonhocs')->where("lopmonhocs.id",$id)->join('hockys','hockys.id','lopmonhocs.hocky_id')->join('namhocs','namhocs.id','hockys.namhoc_id')->select('Tên lớp môn học','Mã lớp môn học','Năm học','Học kỳ','Trạng thái điểm')->first();
-		$res['sinh vien'] = DB::table('sinhvien_lopmonhoc')->where('lopmonhoc_id',$id)->join('sinhviens','sinhviens.id','sinhvien_lopmonhoc.sinhvien_id')->select('Họ tên','username','Ngày sinh','Lớp khóa học')->get();
+		$res['sinh vien'] = DB::table('sinhvien_lopmonhoc')->where('lopmonhoc_id',$id)->join('sinhviens','sinhviens.id','sinhvien_lopmonhoc.sinhvien_id')->select('Họ tên','username','Ngày sinh','Lớp khóa học')->orderBy('username','asc')->get();
 
 		return json_encode($res);
 	}

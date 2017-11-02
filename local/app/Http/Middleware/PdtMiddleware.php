@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Auth;
+use Redirect;
 class PdtMiddleware
 {
     /**
@@ -15,8 +16,11 @@ class PdtMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if (Auth::guard('web')->check()) {
+        if (Auth::guard('pdt')->check()) {
             return $next($request);
+        } else if(Auth::guard('sinhvien')->check())
+        {
+            return Redirect::back();
         }
 		return redirect()->route('login');
     }

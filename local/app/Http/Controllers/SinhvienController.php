@@ -14,7 +14,7 @@ class SinhvienController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:sinhvien');
+        $this->middleware('sv');
     }
 
     /**
@@ -25,5 +25,9 @@ class SinhvienController extends Controller
     public function index()
     {
         return view('SinhVien.home_sv');
+    }
+
+    public function LMH(){
+        return view('SinhVien.LMH');
     }
 }

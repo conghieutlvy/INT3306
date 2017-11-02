@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'pdt',
         'passwords' => 'pdts',
     ],
 
@@ -36,7 +36,7 @@ return [
     */
 
     'guards' => [
-        'web' => [
+        'pdt' => [
             'driver' => 'session',
             'provider' => 'pdts',
         ],
