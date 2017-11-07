@@ -18,7 +18,7 @@ class SinhvienMiddleware
     {
 		if (Auth::guard('sinhvien')->check()) {
             return $next($request);
-        } else if(Auth::guard('web')->check()){
+        } else if(Auth::guard('pdt')->check()){
             return Redirect::back();
         }
 		return redirect()->route('login');

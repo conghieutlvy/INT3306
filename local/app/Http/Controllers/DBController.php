@@ -13,8 +13,8 @@ class DBController extends Controller
         return view('QL_LMH');
     }
     public function addPdf(Request $request, $lopmonhoc_id){
-        $Upfile = $request->file('filePdf');
-        if(isset($Upfile) && $Upfile->getSize() > 0){
+        $fileUp = $request->file('filePdf');
+        if(isset($fileUp) && $fileUp->getSize() > 0){
             $arrTemp = explode('-',$lopmonhoc_id);
             $dir = 'PDF/'.$arrTemp[0].'/'.$arrTemp[1];
             $files = Storage::files($dir);
@@ -22,13 +22,13 @@ class DBController extends Controller
             foreach($files as $file){
                 if($file == $fileName) Storage::delete($file);
             }
-            $path = Storage::putFileAs($dir,$Upfile,$fileName);
-            DB::table('files')->insert(
-               ['Đường dẫn'=> $path,
-               'lopmonhoc_id'=> $lopmonhoc_id,
-               'user_id' => 1]
-            );
-            DB::
+            $path = Storage::putFileAs($dir,$fileUp,$fileName);
+            // DB::table('files')->insert(
+            //    ['Đường dẫn'=> $path,
+            //    'lopmonhoc_id'=> $arrTemp[2],
+            //    'user_id' => 1]
+            // );
+            DB::table('lopmonhocs')->where('id',$arrTemp[2])->update(['Trạng thái điểm' => 1]);
         } else return "Cap nhat file khong thanh cong";
         return 'Cap nhat file thanh cong';
     }

@@ -74,9 +74,13 @@
 								</label>
 							</div>
 							<div id="DIEM_LMH" class="col-md-8">
+
 							</div>
 						</div>
 					</div>
+				</div>
+				<div id="pdfScore" class="row">
+
 				</div>
 				<div class="row">
 					<div class="col-md-12">
@@ -114,8 +118,17 @@
 	</div>
 </div>
 <script type="text/javascript">
-
+			function viewScore(lopmonhoc_id){
+        		$.ajax({
+        			url: "pdf/lmh/" + lopmonhoc_id,
+        			type: "GET",
+        			success: function (data, status, xhr) {
+                    	$('#pdfScore').html(`<embed src=`+ data + ` width="800px" height="2100px" />`);
+                	}
+        		})
+        	};
         $(document).ready(function () {
+        	
             // Create jqxTree
             var tree = $('#treeview');
             var source = null;
@@ -142,16 +155,17 @@
 	                    type: "POST",
 	                    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
 	                    success: function (data, status, xhr) {
-	                    	var obj = jQuery.parseJSON(data);
+	                    	let obj = jQuery.parseJSON(data);
                             $('#NH_LMH').html(obj['thong tin']['Năm học']);
                             $('#HK_LMH').html(obj['thong tin']['Học kỳ']);
 	                    	$('#MA_LMH').html(obj['thong tin']['Mã lớp môn học']);
                             $('#TEN_LMH').html(obj['thong tin']['Tên lớp môn học']);
-                            $('#DIEM_LMH').html(obj['thong tin']['Trạng thái điểm']?"Đã có điểm":"Chưa có điểm");
-	                    	var count = 0;
+                            $('#DIEM_LMH').html(obj['thong tin']['Trạng thái điểm']?"<a target='_blank' id='viewScore' href='pdf/lmh/"+item.id + "'> Đã có điểm </a>":"Chưa có điểm");
+                            //$('#DIEM_LMH').html(obj['thong tin']['Trạng thái điểm']?'<button type="button" onclick="viewScore(`' + item.id + '`)" class="btn btn-link">Xem điểm</button>':"Chưa có điểm");
+	                    	let count = 0;
 	                    	$('#tbbody').html('');
-	                    	var sinhviens = obj['sinh vien'];
-	                    	var len = sinhviens.length;
+	                    	let sinhviens = obj['sinh vien'];
+	                    	let len = sinhviens.length;
 	                    	while(count < len){
 	                    		$('#tbbody').append("<tr>	<td>"+ (++count) +"</td><td>" + sinhviens[count-1]['username'] +"</td><td>"+ sinhviens[count-1]['Họ tên'] + "</td><td>"+ sinhviens[count-1]['Ngày sinh'] + "</td><td>"+ sinhviens[count-1]['Lớp khóa học'] + "</td>	</tr>");
 	                    	};
@@ -161,6 +175,7 @@
                     $('#detail').hide();
                 }
             });
+
             tree.on('expand', function (event) {
                 var label = tree.jqxTree('getItem', event.args.element).label;
                 var $element = $(event.args.element);

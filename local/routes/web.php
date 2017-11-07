@@ -40,6 +40,7 @@ Route::post('QL_LMH/importSV_HK/{hocky_id}', 'DBController@importSV_HK');
 Route::group(['prefix' => 'pdt'], function () {
 	Route::get('home', 'PDTController@index')->name('pdt.home');
     Route::get('QL_LMH', 'PDTController@QL_LMH');
+    Route::post('QL_LMH/lmh/addPdf','PDTController@addPdf');
 });
 
 Route::group(['prefix' => 'sinhvien'], function () {
@@ -48,6 +49,7 @@ Route::group(['prefix' => 'sinhvien'], function () {
     Route::post('LMH/hocky','DBController@initNode');
     Route::post('LMH/hocky/{hocky_id}', 'DBController@hockyExpand');
     Route::post('LMH/lmh/{lopmonhoc_id}', 'DBController@getLMH');
+    Route::get('pdf/lmh/{lopmonhoc_id}', 'SinhvienController@viewPdf');
 });
 
 Route::group(['prefix' => 'auth'], function () {
