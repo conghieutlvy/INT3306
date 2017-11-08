@@ -19,7 +19,7 @@ class CreateTableSINHVIENLOPMONHOC extends Migration
 			$table->integer('lopmonhoc_id')->unsigned();
             $table->timestamps();
 
-            $table->unique('sinhvien_id', 'lopmonhoc_id');
+            //$table->unique('sinhvien_id', 'lopmonhoc_id');
 			$table->foreign('sinhvien_id')->references('id')->on('sinhviens')->onUpdate('cascade');
 			$table->foreign('lopmonhoc_id')->references('id')->on('lopmonhocs')->onUpdate('cascade');
         });

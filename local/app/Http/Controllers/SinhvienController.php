@@ -36,11 +36,13 @@ class SinhvienController extends Controller
     public function viewPdf($lopmonhoc_id){ 
         $arrTemp = explode('-', $lopmonhoc_id);
         $authSv = Auth::guard('sinhvien')->check()? Auth::guard('sinhvien')->user()['id']:0;
-        if($authSv != DB::table('sinhvien_lopmonhoc')->where('lopmonhoc_id',$arrTemp[2])->value('sinhvien_id'))
+        if($authSv && null == DB::table('sinhvien_lopmonhoc')->where([['lopmonhoc_id',$arrTemp[2]],['sinhvien_id',$authSv]])->first())
             return;
-        
-        $filepath = 'local/storage/app/pdf/'.$arrTemp[0].'/'.$arrTemp[1].'/';
-        $path = $filepath.$arrTemp[2];
-        return response()->file($path);
+        if(Storage::exists('pdf/'.$arrTemp[0].'/'.$arrTemp[1].'/'.$arrTemp[2])){
+            $filepath = 'local/storage/app/pdf/'.$arrTemp[0].'/'.$arrTemp[1].'/';
+            $path = $filepath.$arrTemp[2];
+            return response()->file($path);
+        }
+        return;
     }
 }

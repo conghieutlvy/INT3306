@@ -16,12 +16,10 @@ class DBController extends Controller
         $fileUp = $request->file('filePdf');
         if(isset($fileUp) && $fileUp->getSize() > 0){
             $arrTemp = explode('-',$lopmonhoc_id);
-            $dir = 'PDF/'.$arrTemp[0].'/'.$arrTemp[1];
-            $files = Storage::files($dir);
             $fileName = $arrTemp[2];
-            foreach($files as $file){
-                if($file == $fileName) Storage::delete($file);
-            }
+            $dir = 'PDF/'.$arrTemp[0].'/'.$arrTemp[1].'/'.$fileName;
+            $exist = Storage::exists($dir);
+            if($exist) Storage::delete($dir);
             $path = Storage::putFileAs($dir,$fileUp,$fileName);
             // DB::table('files')->insert(
             //    ['Đường dẫn'=> $path,
