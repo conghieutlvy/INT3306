@@ -118,15 +118,15 @@
 	</div>
 </div>
 <script type="text/javascript">
-			function viewScore(lopmonhoc_id){
-        		$.ajax({
-        			url: "pdf/lmh/" + lopmonhoc_id,
-        			type: "GET",
-        			success: function (data, status, xhr) {
-                    	$('#pdfScore').html(`<embed src=`+ data + ` width="800px" height="2100px" />`);
-                	}
-        		})
-        	};
+		function viewScore(lopmonhoc_id){
+        	$.ajax({
+        		url: "pdf/lmh/" + lopmonhoc_id,
+        		type: "GET",
+        		success: function (data, status, xhr) {
+                    $('#pdfScore').html(`<embed src=`+ data + ` width="800px" height="2100px" />`);
+                }
+        	})
+        };
         $(document).ready(function () {
         	
             // Create jqxTree

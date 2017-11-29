@@ -12,6 +12,13 @@ class DBController extends Controller
     public function QL_LMH(){
         return view('QL_LMH');
     }
+    public function search($id,$key){
+        if($key == 'getAll') $key = '';
+        $data = DB::table('lopmonhocs')->where('hocky_id',$id)->where(function($q) use ($key){
+            $q->where('Mã lớp môn học','LIKE','%'.$key.'%')->orWhere('Tên lớp môn học','LIKE','%'.$key.'%');
+        })->select('Mã lớp môn học','Tên lớp môn học','Trạng thái điểm')->get();
+        return json_encode($data);
+    }
     public function addPdf(Request $request, $lopmonhoc_id){
         $fileUp = $request->file('filePdf');
         if(isset($fileUp) && $fileUp->getSize() > 0){
@@ -175,14 +182,11 @@ class DBController extends Controller
 		
 		//Set children array
 		foreach($data as $key => &$item) {
-		    $temp = $item['id'];
             $newId = $item['namhoc_id'].'-'.$item['id'];
             $item['id'] = $newId;
             $item['label'] = $item['Học kỳ'];
             unset($item['Học kỳ']);
             $itemsByReference[$newId] = &$item;
-            // Children array:
-            $itemsByReference[$newId]['items'] = [['value'=> $temp, "label" => "Loading..."]];
 
             // Parent array
             if(isset($itemsByReference[$item['namhoc_id']])) {

@@ -184,7 +184,7 @@
 					</div>
 				</div>
 			</div>
-			<div id="importSV_HK" style="padding-top: 3%;display: none">
+			<!--<div id="importSV_HK" style="padding-top: 3%;display: none">
 				<div class="row">
 					<div class="col-md-12">
 						<h3 class="text-info text-left">
@@ -215,11 +215,28 @@
 					</div>
 				</div>
 			</div>
+			-->
+			<div id="hocKy" style="padding-top: 5%">
+				<div id="custom-search-input">
+					<div class="input-group col-md-12">
+						<input type="textSearch" id="textSearch" class="form-control input" onkeyup="" placeholder="Search" />
+						<span class="input-group-btn">
+							<button class="btn btn-info btn" type="button">
+								<i class="glyphicon glyphicon-search"></i>
+							</button>
+						</span>
+					</div>
+				</div>
+				<table>
+					<tbody id="tbLMH">
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</div>
 </div>
 <script type="text/javascript">
-
+	
         $(document).ready(function () {
 			$('#btImportSV_HK').click(function () {
                 var hocky_id = tree.jqxTree('getSelectedItem').id.split("-")[1];
@@ -319,6 +336,7 @@
                     });
                     $('#pImportSV_HK').removeClass('alert-danger alert-success').empty();
                     $('#detail').hide();
+					search_data('');
                 } else
 				if(!label.includes("Học kỳ") && !label.includes("Năm học")){
                     // Show & Clear data
@@ -380,6 +398,10 @@
                     });
                 }
             });
+
+			$("#textSearch").keyup(function(){
+				search_data(this.value);
+			});
             
         });
 	function importSV(url,formId,fileId,processId, msgId){
@@ -457,5 +479,27 @@
             }
 		});
 	};
+
+	function search_data(data){
+		if(data == '') data = 'getAll';
+		let hocky_id = $('#treeview').jqxTree('getSelectedItem').id.split("-")[1];
+		$.ajax({
+            url: "QL_LMH/search/" + hocky_id + "/" + data,
+            type: "POST",
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            success: function(data, status, xhr){
+				let arr = jQuery.parseJSON(data);
+				let count = 0;
+				$('#tbLMH').html('');
+				for(temp in arr){
+					if(!arr[temp]['Trạng thái điểm'])
+						$('#tbLMH').append(`<tr><td>` + ++count +`</td><td>`+ arr[temp]['Mã lớp môn học'] + '</td></tr>');
+					else{
+						$('#tbLMH').append(`<tr><td>` + ++count +`</td><td>`+ arr[temp]['Mã lớp môn học'] + '</td></tr>');
+					}
+				}
+            }
+       });
+	}
 </script>
 @endsection

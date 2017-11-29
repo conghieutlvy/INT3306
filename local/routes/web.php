@@ -37,10 +37,12 @@ Route::post('QL_LMH/importSV_LMH/{lopmonhoc_id}', 'DBController@importSV_LMH');
 
 Route::post('QL_LMH/importSV_HK/{hocky_id}', 'DBController@importSV_HK');
 
+Route::post('QL_LMH/search/{hocky_id}/{search}', 'DBController@search');
+
 Route::group(['prefix' => 'pdt'], function () {
 	Route::get('home', 'PDTController@index')->name('pdt.home');
-    Route::get('QL_LMH', 'PDTController@QL_LMH');
-    Route::post('QL_LMH/lmh/addPdf','PDTController@addPdf');
+  Route::get('QL_LMH', 'PDTController@QL_LMH');
+  Route::post('QL_LMH/lmh/addPdf','PDTController@addPdf');
 });
 
 Route::group(['prefix' => 'sinhvien'], function () {
