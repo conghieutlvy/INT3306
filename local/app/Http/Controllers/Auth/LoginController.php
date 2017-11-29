@@ -58,30 +58,26 @@ class LoginController extends Controller
         'password' => 'required'
       ]);
 	
-      if($request->option == 'pdt'){
+      if(1){
 		  if (Auth::guard('pdt')->attempt(['username' => $request->username, 'password' => $request->password], $request->remember)) {
 			// if successful, then redirect to their intended location
 			return redirect()->route('pdt.home');
 		  }
-		  // if unsuccessful, then redirect back to the login with the form data
-		  return redirect()->back()->withInput($request->only('username', 'remember'));
-	  }else{
-		  $sv = sinhvien::where('username','=',$request->username)->value('Kích hoạt');
-		  if($sv){
-			// if successful, then redirect to their intended location
-			$result = $this->svlogin($request->username, $request->password);
-			if($result == 302){
+          $sv = sinhvien::where('username','=',$request->username)->value('Kích hoạt');
+          if($sv){
+            // if successful, then redirect to their intended location
+            $result = $this->svlogin($request->username, $request->password);
+            if($result == 302){
                 Auth::guard('sinhvien')->attempt(['username'=>$request->username],$request->remember);
-				return redirect()->route('sv.home');
-			}
-		  	else{
-				return redirect()->back()->withInput($request->only('username', 'remember'));
-			}
-		  }else{
-			  // if unsuccessful, then redirect back to the login with the form data
-			  return redirect()->back()->withInput($request->only('username', 'remember'));
-		  }
-	  }
+                return redirect()->route('sv.home');
+            }
+            else{
+                return redirect()->back()->withInput($request->only('username', 'remember'));
+            }
+        }
+		// if unsuccessful, then redirect back to the login with the form data
+		return redirect()->back()->withInput($request->only('username', 'remember'));
+        }
     }
 	
 	/**

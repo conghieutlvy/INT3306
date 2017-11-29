@@ -9,34 +9,8 @@ use App\sinhvien;
 use Auth;
 class DBController extends Controller
 {
-    public function QL_LMH(){
-        return view('QL_LMH');
-    }
-    public function search($id,$key){
-        if($key == 'getAll') $key = '';
-        $data = DB::table('lopmonhocs')->where('hocky_id',$id)->where(function($q) use ($key){
-            $q->where('Mã lớp môn học','LIKE','%'.$key.'%')->orWhere('Tên lớp môn học','LIKE','%'.$key.'%');
-        })->select('Mã lớp môn học','Tên lớp môn học','Trạng thái điểm')->get();
-        return json_encode($data);
-    }
-    public function addPdf(Request $request, $lopmonhoc_id){
-        $fileUp = $request->file('filePdf');
-        if(isset($fileUp) && $fileUp->getSize() > 0){
-            $arrTemp = explode('-',$lopmonhoc_id);
-            $fileName = $arrTemp[2];
-            $dir = 'PDF/'.$arrTemp[0].'/'.$arrTemp[1].'/'.$fileName;
-            $exist = Storage::exists($dir);
-            if($exist) Storage::delete($dir);
-            $path = Storage::putFileAs($dir,$fileUp,$fileName);
-            // DB::table('files')->insert(
-            //    ['Đường dẫn'=> $path,
-            //    'lopmonhoc_id'=> $arrTemp[2],
-            //    'user_id' => 1]
-            // );
-            DB::table('lopmonhocs')->where('id',$arrTemp[2])->update(['Trạng thái điểm' => 1]);
-        } else return "Cap nhat file khong thanh cong";
-        return 'Cap nhat file thanh cong';
-    }
+
+
     public function importSv(Request $request){
     	return json_encode($request->file());
 		$file = $request->file('fileSV');
@@ -165,36 +139,7 @@ class DBController extends Controller
         }
         return json_encode($res);
 	}
-	public function initNode(){
-		$namhoc = json_decode(json_encode(DB::table('namhocs')->select('id','Năm học')->orderBy('id','desc')->get()),true);
-		$data = json_decode(json_encode(DB::table('hockys')->select('id','Học kỳ', 'namhoc_id')->get()),true);
-		$itemsByReference = array();
-		//Create node
-		$namhoc['0']['expanded'] = true;
-		foreach($namhoc as $key => &$item) {
-				$item['label'] = "Năm học ".$item['Năm học'];
-				// Children array:
-				unset($item['Năm học']);
-				//$item['expanded'] = true;
-				$itemsByReference[$item['id']] = &$item;
-				$itemsByReference[$item['id']]['items'] = array(); 
-		}
-		
-		//Set children array
-		foreach($data as $key => &$item) {
-            $newId = $item['namhoc_id'].'-'.$item['id'];
-            $item['id'] = $newId;
-            $item['label'] = $item['Học kỳ'];
-            unset($item['Học kỳ']);
-            $itemsByReference[$newId] = &$item;
-
-            // Parent array
-            if(isset($itemsByReference[$item['namhoc_id']])) {
-                $itemsByReference[$item['namhoc_id']]['items'][] = &$item;
-            }
-		}
-		return json_encode($namhoc) ;
-	}
+	
 
 	public function hockyExpand($id){
 	    $authSv = Auth::guard('sinhvien')->check()? Auth::guard('sinhvien')->user()['id']:0;

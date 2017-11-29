@@ -4,24 +4,24 @@
 <div id="add_sv" >	
 	<div class="container-fluid">
 		<div class="row">
-			<div class="col-md-3" style="border:1px inset; border-radius:10px">
-			<h1> Tree</h1>
-			</div>
-			<div id="formAddSv" class="col-md-9" style="border:1px outset; border-radius:10px"> 
+			<div id="formAddSv" class="col-md-12" > 
 			<div class= "container-fluid" style="margin-left: 1%">
 				<div class="row" >
-					<div class="row">
-						<div class="col-md-12">
-							<h2 class="text-info " >
-									Thêm sinh viên 
-							</h2>
+					<div class="col-md-10  col-md-offset-1">
+						<h3 class="text-info " >
+								Thêm sinh viên 
+						<button id="btShow" onclick="showForm()" style="display: inline-block; border-radius: 20%">
+							+
+						</button>
+						</h3>
+						<div id="divAddSV">
 							<div class="col-md-6">
-								<h3> Thêm bằng Form:</h3>
+								<h4> Thêm bằng Form:</h4>
 								<form>
 									<div class="row">
 										<div class="col-md-3">						 
 											<label for="Tên">
-												<h4>Mã Sinh Viên:</h4>
+												<h5>Mã Sinh Viên:</h5>
 											</label> 
 									</div>
 									<div class="col-md-9">
@@ -31,7 +31,7 @@
 									<div class="row">
 										<div class="col-md-3">						 
 											<label for="Tên">
-												<h4>Họ Và Tên:</h4>
+												<h5>Họ Và Tên:</h5>
 											</label> 
 									</div>
 									<div class="col-md-9">
@@ -41,7 +41,7 @@
 									<div class="row">
 										<div class="col-md-3">						 
 											<label for="Tên">
-												<h4>Ngày sinh:</h4>
+												<h5>Ngày sinh:</h5>
 											</label> 
 									</div>
 									<div class="col-md-9">
@@ -51,7 +51,7 @@
 								<div class="row">
 										<div class="col-md-3">						 
 											<label for="Tên">
-												<h4>Lớp:</h4>
+												<h5>Lớp:</h5>
 											</label> 
 									</div>
 									<div class="col-md-9">
@@ -60,15 +60,15 @@
 								</div>
 								</form>
 								<button id="btImportSV_LMH" type="button" class="btn btn btn-primary pull-right" style="margin-left: 10%">
-									Cập Nhập
+									Cập Nhật
 								</button>
 							</div>
 
 							<div class="col-md-6 " >			
-								<h3> Thêm bằng File:</h3>
+								<h4> Thêm bằng File:</h4>
 								<div class="row">
 									<div class="col-md-3">
-										<label for ="fileSV"> <h4>Chọn File: </h4> </label>
+										<label for ="fileSV"> <h5>Chọn File: </h5> </label>
 									</div>
 									<div class="col-md-9">
 									<h5>
@@ -80,41 +80,57 @@
 									</div>
 								</div>
 								<button id="btImportSV_LMH" type="button" class="btn btn btn-primary pull-right" style="margin-right: 10%">
-									Cập Nhập
+									Cập Nhật
 								</button>
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="row">
-					<div class="form-group has-feedback" style="margin-left: 70%">
-					    <input type="text" class="form-control" id="inputSuccess2"/>
-					    <span class="glyphicon glyphicon-search form-control-feedback"></span>
+				<div class="row"  style="padding-top: 10px">
+					<div class="col-md-10 col-md-offset-1">
+						<div class="row col-md-12">
+							<div id="custom-search-input">
+								<div class="input-group col-md-12">
+									<input maxlength ="40" type="textSearch" id="textSearch" class="form-control input-lg" placeholder="Search" />
+									<span class="input-group-btn">
+										<button class="btn btn-info btn-lg" type="button">
+											<i class="glyphicon glyphicon-search"></i>
+										</button>
+									</span>
+								</div>
+							</div>
+							<table class="table col-md-12" style="margin-top:20px" border="3">
+								<thead>
+									<tr>
+										<th>
+											STT
+										</th>
+										<th>
+											Mã Sinh Viên
+										</th>
+										<th>
+											Họ Và Tên
+										</th>
+										<th>
+											Ngày Sinh
+										</th>
+										<th>
+											Lớp
+										</th>
+										<th>
+											Kích Hoạt
+										</th>
+									</tr>
+								</thead>
+								<tbody id="tbSV">
+								</tbody>
+							</table>
+						</div>
 					</div>
-					<div class="col-md-12">
+					<div class="col-md-1">
+					</div>
+					<!--<div class="col-md-12">
 						<table class="table" border="5">
-							<thead>
-								<tr>
-									<th>
-										STT
-									</th>
-									<th>
-										Mã Sinh Viên
-									</th>
-									<th>
-										Họ Và Tên
-									</th>
-									<th>
-										Ngày Sinh
-									</th>
-									<th>
-										Lớp
-									</th>
-									<th>
-										Kích Hoạt
-									</th>
-								</tr>
-							</thead>
 							<tbody>
 								<tr>
 									<td>
@@ -156,10 +172,26 @@
 								</tr>
 							</tbody>
 						</table>
-					</div>
+					</div>-->
 				</div>	
 			</div>
 		</div>	
 	</div>
-</div>			   
+</div>
+<script type="text/javascript">
+	var show = 0;
+	$(document).ready(function(){
+		$('#divAddSV').hide(); 
+	})
+	function showForm() {
+		if(!show){
+			$('#divAddSV').show();
+			show = 1;
+		}
+		else{ 
+			$('#divAddSV').hide();
+			show = 0;
+		}
+	}
+</script>			   
 @endsection

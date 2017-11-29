@@ -38,17 +38,6 @@
                                 @endif
                             </div>
                         </div>
-						
-                        <div class="form-group">
-                            <label for="option" class="col-md-4 control-label">Đăng nhập với tư cách:</label>
-
-                            <div class="col-md-6">
-                                <select id="option" type="" class="form-control" name="option" value="{{ old('option') }}">
-                                	<option value="sinhvien"> Sinh viên</option>
-                    				<option value="pdt"> Phòng Đào tạo </option>
-                                </select>
-                            </div>
-                        </div>
                         
                         <div class="form-group">
                             <div class="col-md-6 col-md-offset-4">

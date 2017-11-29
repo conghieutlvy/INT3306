@@ -26,7 +26,7 @@ class SinhvienController extends Controller
      */
     public function index()
     {
-        return view('SinhVien.home_sv');
+        return view('SinhVien.LMH');
     }
 
     public function LMH(){
@@ -58,14 +58,17 @@ class SinhvienController extends Controller
         return json_encode($data);
     }
     public function viewPdf($lopmonhoc_id){ 
-        $arrTemp = explode('-', $lopmonhoc_id);
-        $authSv = Auth::guard('sinhvien')->check()? Auth::guard('sinhvien')->user()['id']:0;
-        if($authSv && null == DB::table('sinhvien_lopmonhoc')->where([['lopmonhoc_id',$arrTemp[2]],['sinhvien_id',$authSv]])->first())
+        $authSv = (Auth::guard('sinhvien')->check() || Auth::guard('pdt')->check())?1:0;
+        if(!$authSv)
             return;
-        if(Storage::exists('pdf/'.$arrTemp[0].'/'.$arrTemp[1].'/'.$arrTemp[2])){
-            $filepath = 'local/storage/app/pdf/'.$arrTemp[0].'/'.$arrTemp[1].'/';
-            $path = $filepath.$arrTemp[2];
-            return response()->file($path);
+        $detail = DB::table('lopmonhocs')->where('lopmonhocs.id',$lopmonhoc_id)
+        ->join('hockys','hockys.id','lopmonhocs.hocky_id')
+        ->join('namhocs','namhocs.id','hockys.namhoc_id')
+        ->select('Năm học as namhoc','Học kỳ as hocky','Mã lớp môn học as lmh')->get();
+        $path = 'pdf/'.$detail[0]->namhoc.'/'.$detail[0]->hocky.'/'.$detail[0]->lmh;
+        if(Storage::exists($path)){
+            $filepath = 'local/storage/app/';
+            return response()->file($filepath.$path);
         }
         return;
     }

@@ -16,7 +16,7 @@
 					</span>
 				</div>
 			</div>
-			<table style="margin-top:20px">
+			<table class="table-result-sss col-md-12" style="margin-top:20px">
 				<tbody id="tbLMH">
 				</tbody>
 			</table>
@@ -37,18 +37,27 @@
 				let count = 0;
 				$('#tbLMH').html('');
 				for(temp in arr){
-					let score;
-					if(arr[temp]['score'])
+					let score,aClass,title,linkFile;
+
+					if(!arr[temp]['score']){
 						score = "Chưa có điểm";
-					else score = "Đã có điểm";
-					let subTitle = arr[temp]['Mã lớp môn học'] + " - " + arr[temp]['Tên lớp môn học'] + " - " + arr[temp]['Học kỳ'] + " - " + arr[temp]['Năm học']
-					$('#tbLMH').append(`<tr>
-											<td>
+						aClass = 'notLinkToFile';
+						title = 'Môn này chưa có điểm';
+					}
+					else {
+						score = "Đã có điểm";
+						aClass = 'haveLinkToFile';
+						title = 'Môn này đã có điểm';
+						linkFile = "target='_blank' href='pdf/lmh/" + arr[temp]['id'] +"'";
+					}
+					let subTitle = arr[temp]['Mã lớp môn học'] + " - " + arr[temp]['Tên lớp môn học'] + " - " + arr[temp]['Học kỳ'] + " - " + arr[temp]['Năm học'];
+					$('#tbLMH').append(`<tr class="element-of-table-result">
+											<td class='col-md-12'>
 												<div class="form-group">
-													<a class="" title="Môn này chưa có điểm">
+													<a ` + linkFile + ` class="` + aClass + `" title="`+ title +`" style="cursor:pointer;">
 														<span class="">` + subTitle + `</span>
 														<br>
-														<span class="">` +  + `</span>
+														<span class="">` + score + `</span>
 													</a> 
 												</div>
 											</td>
@@ -63,5 +72,32 @@
 			search_data(this.value);
 		})
     });
+
 </script>
+<style type="text/css">
+	.element-of-table-result td > div{
+		padding-top: 7px;
+		height: 65px; 
+		margin-bottom: 7px!important;
+		border-radius: 10px;
+	}
+
+	.notLinkToFile {
+		font-size: 17px;
+		color:gray;
+	}
+	.notLinkToFile:hover {
+		font-size: 20px;
+		color:gray;
+	}
+
+	.haveLinkToFile {
+		font-size: 17px;
+		color:blue;
+	}
+	.haveLinkToFile:hover {
+		font-size: 20px;
+		color:blue;
+	}
+</style>
 @endsection

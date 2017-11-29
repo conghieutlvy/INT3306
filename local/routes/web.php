@@ -12,16 +12,13 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
-})->name('welcome');
+    if(Auth::guard('sinhvien')->check())
+    	return redirect()->route('sv.home');
+    else if(Auth::guard('pdt')->check())
+    	return redirect()->route('sv.home');
+    else return view('welcome');
+})->name('home');
 
-Route::get('import', function () {
-    return view('importDemo');
-});
-
-Route::get('QL_LMH', 'DBController@QL_LMH');
-
-Route::post('QL_LMH/hocky', 'DBController@initNode');
 
 Route::post('QL_LMH/hocky/{hocky_id}', 'DBController@hockyExpand');
 
@@ -29,7 +26,7 @@ Route::post('QL_LMH/lmh/{lopmonhoc_id}', 'DBController@getLMH');
 
 Route::get('QL_LMH/lmh/{lopmonhoc_id}', 'DBController@getLMH');
 
-Route::post('QL_LMH/addPdf/{lopmonhoc_id}', 'DBController@addPdf');
+
 
 Route::post('QL_LMH/importSV', 'DBController@importSV');
 
@@ -37,21 +34,25 @@ Route::post('QL_LMH/importSV_LMH/{lopmonhoc_id}', 'DBController@importSV_LMH');
 
 Route::post('QL_LMH/importSV_HK/{hocky_id}', 'DBController@importSV_HK');
 
-Route::post('QL_LMH/search/{hocky_id}/{search}', 'DBController@search');
+
 
 Route::group(['prefix' => 'pdt'], function () {
 	Route::get('home', 'PDTController@index')->name('pdt.home');
-  Route::get('QL_LMH', 'PDTController@QL_LMH');
-  Route::post('QL_LMH/lmh/addPdf','PDTController@addPdf');
+  	Route::get('QL_LMH', 'PDTController@QL_LMH')->name('pdt.QL_LMH');
+  	Route::get('QLSV','PDTController@QLSV')->name('pdt.QLSV');
+  	Route::post('QL_LMH/lmh/addPdf','PDTController@addPdf');
+  	Route::post('QL_LMH/search/{hocky_id}/{search}', 'PDTController@search');
+	Route::get('QL_LMH/search/{hocky_id}', 'PDTController@getAll');
+	Route::post('QL_LMH/hocky', 'PDTController@initNode');
+	Route::post('QL_LMH/addPdf/{lopmonhoc_id}', 'PDTController@addPdf');
+	Route::get('pdf/lmh/{lopmonhoc_id}', 'PDTController@viewPdf');
 });
 
 Route::group(['prefix' => 'sinhvien'], function () {
-	Route::get('home_sv', 'SinhvienController@index')->name('sv.home');
-	Route::get('LMH','SinhvienController@LMH');
-  Route::get('LMH/search','SinhvienController@getAll');
-  Route::post('LMH/search/{search}', 'SinhvienController@search');
-  Route::post('LMH/lmh/{lopmonhoc_id}', 'DBController@getLMH');
-  Route::get('pdf/lmh/{lopmonhoc_id}', 'SinhvienController@viewPdf');
+	Route::get('LMH', 'SinhvienController@index')->name('sv.home');
+  	Route::get('LMH/search','SinhvienController@getAll');
+  	Route::post('LMH/search/{search}', 'SinhvienController@search');
+  	Route::get('pdf/lmh/{lopmonhoc_id}', 'SinhvienController@viewPdf');
 });
 
 Route::group(['prefix' => 'auth'], function () {
