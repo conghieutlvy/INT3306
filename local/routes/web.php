@@ -48,10 +48,10 @@ Route::group(['prefix' => 'pdt'], function () {
 Route::group(['prefix' => 'sinhvien'], function () {
 	Route::get('home_sv', 'SinhvienController@index')->name('sv.home');
 	Route::get('LMH','SinhvienController@LMH');
-    Route::post('LMH/hocky','DBController@initNode');
-    Route::post('LMH/hocky/{hocky_id}', 'DBController@hockyExpand');
-    Route::post('LMH/lmh/{lopmonhoc_id}', 'DBController@getLMH');
-    Route::get('pdf/lmh/{lopmonhoc_id}', 'SinhvienController@viewPdf');
+  Route::get('LMH/search','SinhvienController@getAll');
+  Route::post('LMH/search/{search}', 'SinhvienController@search');
+  Route::post('LMH/lmh/{lopmonhoc_id}', 'DBController@getLMH');
+  Route::get('pdf/lmh/{lopmonhoc_id}', 'SinhvienController@viewPdf');
 });
 
 Route::group(['prefix' => 'auth'], function () {

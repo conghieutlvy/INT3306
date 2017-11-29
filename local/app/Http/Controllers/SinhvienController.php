@@ -33,6 +33,30 @@ class SinhvienController extends Controller
         return view('SinhVien.LMH');
     }
 
+    public function getAll(){
+        $authSv = Auth::guard('sinhvien')->check()? Auth::guard('sinhvien')->user()['id']:0;
+        if($authSv) $data = 
+            DB::table('sinhvien_lopmonhoc')->join('lopmonhocs','lopmonhocs.id','sinhvien_lopmonhoc.lopmonhoc_id')
+            ->join('hockys','hockys.id','lopmonhocs.hocky_id')
+            ->join('namhocs','namhocs.id','hockys.namhoc_id')->select('lopmonhocs.id','Tên lớp môn học','Mã lớp môn học','Học kỳ','Năm học','lopmonhocs.score')
+            ->where('sinhvien_lopmonhoc.sinhvien_id',$authSv)->orderBy('hockys.id','desc')->get();
+
+        return json_encode($data);
+    }
+
+    public function search($key){
+        $authSv = Auth::guard('sinhvien')->check()? Auth::guard('sinhvien')->user()['id']:0;
+        if($authSv) $data = 
+            DB::table('sinhvien_lopmonhoc')->join('lopmonhocs','lopmonhocs.id','sinhvien_lopmonhoc.lopmonhoc_id')
+            ->join('hockys','hockys.id','lopmonhocs.hocky_id')
+            ->join('namhocs','namhocs.id','hockys.namhoc_id')->select('lopmonhocs.id','Tên lớp môn học','Mã lớp môn học','Học kỳ','Năm học','lopmonhocs.score')
+            ->where('sinhvien_lopmonhoc.sinhvien_id',$authSv)
+            ->where(function($q) use ($key){
+                $q->where('Mã lớp môn học','LIKE','%'.$key.'%')->orWhere('Tên lớp môn học','LIKE','%'.$key.'%');
+            })->orderBy('hockys.id','desc')->get();
+
+        return json_encode($data);
+    }
     public function viewPdf($lopmonhoc_id){ 
         $arrTemp = explode('-', $lopmonhoc_id);
         $authSv = Auth::guard('sinhvien')->check()? Auth::guard('sinhvien')->user()['id']:0;

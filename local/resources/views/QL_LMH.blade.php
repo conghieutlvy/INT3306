@@ -489,6 +489,7 @@
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
             success: function(data, status, xhr){
 				let arr = jQuery.parseJSON(data);
+				console.log(arr);
 				let count = 0;
 				$('#tbLMH').html('');
 				for(temp in arr){

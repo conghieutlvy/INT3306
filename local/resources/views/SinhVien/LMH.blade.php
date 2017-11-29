@@ -2,208 +2,66 @@
 
 @section('content')
     <div class="container-fluid">
-	<div class="row">
-		<div class="col-md-3">
-			<div class="row">
-				<div class="col-md-12">
-					<h3> Danh sách lớp môn học</h3>
+	<div class="col-md-2">
+	</div>
+	<div class="col-md-8">
+		<div class="row col-md-12">
+			<div id="custom-search-input">
+				<div class="input-group col-md-12">
+					<input maxlength ="40" type="textSearch" id="textSearch" class="form-control input-lg" placeholder="Search" />
+					<span class="input-group-btn">
+						<button class="btn btn-info btn-lg" type="button">
+							<i class="glyphicon glyphicon-search"></i>
+						</button>
+					</span>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-md-12">
-					<div id="treeview">
-					</div>
-					<p></p>
-					
-				</div>
-			</div>
-			<hr/>
+			<table style="margin-top:20px">
+				<tbody id="tbLMH">
+				</tbody>
+			</table>
 		</div>
-		<div class="col-md-9">
-			<div id="detail" style="display: none">
-				<div class="row">
-					<div class="col-md-6">
-						<h3 class="text-info text-left">
-							Thông tin lớp môn học
-						</h3>
-						<div class="row">
-							<div class="col-md-4">
-								<label>
-									Năm học:
-								</label>
-							</div>
-							<div id="NH_LMH" class="col-md-8">
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-md-4">
-								<label>
-									Học kỳ:
-								</label>
-							</div>
-							<div id="HK_LMH" class="col-md-8">
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-md-4">
-								<label>
-									Tên lớp môn học:
-								</label>
-							</div>
-							<div id="TEN_LMH" class="col-md-8">
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-md-4">
-								<label>
-									Mã lớp môn học:
-								</label>
-							</div>
-							<div id="MA_LMH" class="col-md-8">
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6">
-						<h3 class="text-info text-left">
-							Thông tin điểm
-						</h3>
-						<div class="row">
-							<div class="col-md-4">
-								<label>
-									Trạng thái điểm:
-								</label>
-							</div>
-							<div id="DIEM_LMH" class="col-md-8">
-
-							</div>
-						</div>
-					</div>
-				</div>
-				<div id="pdfScore" class="row">
-
-				</div>
-				<div class="row">
-					<div class="col-md-12">
-						<h3 class="text-info text-left">
-							Thông tin sinh viên lớp môn học:
-						</h3>
-						<table class="table" border="5">
-							<thead>
-							<tr>
-								<th width="5%">
-									STT
-								</th>
-								<th width="10%">
-									Mã sinh viên
-								</th>
-								<th with="45%">
-									Tên sinh viên
-								</th>
-								<th width="20%">
-									Ngày sinh
-								</th>
-								<th width="20%">
-									Lớp khóa học
-								</th>
-							</tr>
-							</thead>
-							<tbody id="tbbody">
-							</tbody>
-						</table>
-
-					</div>
-				</div>
-			</div>
-		</div>
+	</div>
+	<div class="col-md-2">
 	</div>
 </div>
 <script type="text/javascript">
-		function viewScore(lopmonhoc_id){
-        	$.ajax({
-        		url: "pdf/lmh/" + lopmonhoc_id,
-        		type: "GET",
-        		success: function (data, status, xhr) {
-                    $('#pdfScore').html(`<embed src=`+ data + ` width="800px" height="2100px" />`);
-                }
-        	})
-        };
-        $(document).ready(function () {
-        	
-            // Create jqxTree
-            var tree = $('#treeview');
-            var source = null;
-            $.ajax({
-                async: false,
-                url:'LMH/hocky',
-                type: "POST",
-                //dataType: "json",
-                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-                success: function (data, status, xhr) {
-                    source = jQuery.parseJSON(data);
-                }
-            });
-            tree.jqxTree({ source: source});
-
-            tree.on('select', function (event){
-            	var item = tree.jqxTree('getSelectedItem', event.args.element);
-            	var label = item.label;
-            	if(!label.includes("Học kỳ") && !label.includes("Năm học")){
-                    $('#detail').show();
-                    var url = item.id.split('-')[2];
-            		$.ajax({
-	                    url: "LMH/lmh/" + url,
-	                    type: "POST",
-	                    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-	                    success: function (data, status, xhr) {
-	                    	let obj = jQuery.parseJSON(data);
-                            $('#NH_LMH').html(obj['thong tin']['Năm học']);
-                            $('#HK_LMH').html(obj['thong tin']['Học kỳ']);
-	                    	$('#MA_LMH').html(obj['thong tin']['Mã lớp môn học']);
-                            $('#TEN_LMH').html(obj['thong tin']['Tên lớp môn học']);
-                            $('#DIEM_LMH').html(obj['thong tin']['Trạng thái điểm']?"<a target='_blank' id='viewScore' href='pdf/lmh/"+item.id + "'> Đã có điểm </a>":"Chưa có điểm");
-                            //$('#DIEM_LMH').html(obj['thong tin']['Trạng thái điểm']?'<button type="button" onclick="viewScore(`' + item.id + '`)" class="btn btn-link">Xem điểm</button>':"Chưa có điểm");
-	                    	let count = 0;
-	                    	$('#tbbody').html('');
-	                    	let sinhviens = obj['sinh vien'];
-	                    	let len = sinhviens.length;
-	                    	while(count < len){
-	                    		$('#tbbody').append("<tr>	<td>"+ (++count) +"</td><td>" + sinhviens[count-1]['username'] +"</td><td>"+ sinhviens[count-1]['Họ tên'] + "</td><td>"+ sinhviens[count-1]['Ngày sinh'] + "</td><td>"+ sinhviens[count-1]['Lớp khóa học'] + "</td>	</tr>");
-	                    	};
-	                    }
-	                });
-            	} else {
-                    $('#detail').hide();
-                }
-            });
-
-            tree.on('expand', function (event) {
-                var label = tree.jqxTree('getItem', event.args.element).label;
-                var $element = $(event.args.element);
-                var loader = false;
-                var loaderItem = null;
-                var children = $element.find('ul:first').children();
-                $.each(children, function () {
-                    var item = tree.jqxTree('getItem', this);
-                    if (item && item.label == 'Loading...') {
-                        loaderItem = item;
-                        loader = true;
-                        return false
-                    };
-                });
-                if (loader) {
-                    $.ajax({
-                        url: "LMH/hocky/" + loaderItem.value,
-                        type: "POST",
-                        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-                        success: function (data, status, xhr) {
-                            var items = jQuery.parseJSON(data);
-                            tree.jqxTree('addTo', items, $element[0]);
-                            tree.jqxTree('removeItem', loaderItem.element);
-                        }
-                    });
-                }
-            });
-            
-        });
+	function search_data(data){
+		$.ajax({
+            url: "LMH/search/" + data,
+            type: "POST",
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            success: function(data, status, xhr){
+				let arr = jQuery.parseJSON(data);
+				console.log(arr);
+				let count = 0;
+				$('#tbLMH').html('');
+				for(temp in arr){
+					let score;
+					if(arr[temp]['score'])
+						score = "Chưa có điểm";
+					else score = "Đã có điểm";
+					let subTitle = arr[temp]['Mã lớp môn học'] + " - " + arr[temp]['Tên lớp môn học'] + " - " + arr[temp]['Học kỳ'] + " - " + arr[temp]['Năm học']
+					$('#tbLMH').append(`<tr>
+											<td>
+												<div class="form-group">
+													<a class="" title="Môn này chưa có điểm">
+														<span class="">` + subTitle + `</span>
+														<br>
+														<span class="">` +  + `</span>
+													</a> 
+												</div>
+											</td>
+										</tr>`);
+				}
+            }
+       });
+	}
+    $(document).ready(function () {
+		search_data('');
+		$('#textSearch').keyup(function(){
+			search_data(this.value);
+		})
+    });
 </script>
 @endsection
