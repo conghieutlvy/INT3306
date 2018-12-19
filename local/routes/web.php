@@ -15,7 +15,7 @@ Route::get('/', function () {
     if(Auth::guard('sinhvien')->check())
     	return redirect()->route('sv.home');
     else if(Auth::guard('pdt')->check())
-    	return redirect()->route('sv.home');
+    	return redirect()->route('pdt.home');
     else return view('welcome');
 })->name('home');
 
